@@ -1,0 +1,98 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}العلامات التجارية - {{ store.name }}{% endblock %}
+{% block body_class %}page-brands{% endblock %}
+
+{% block content %}
+  <div class="container" style="padding-top:var(--md-sys-spacing-lg);">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">العلامات التجارية</span>
+      </div>
+    </nav>
+
+    {# Page Header #}
+    <div style="text-align:center;padding:var(--md-sys-spacing-2xl) 0 var(--md-sys-spacing-xl);">
+      <h1 class="md-headline-large" style="color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-sm);">العلامات التجارية</h1>
+      <p style="color:var(--md-sys-color-on-surface-variant);font-size:var(--md-sys-typescale-body-large-size);max-width:500px;margin:0 auto;">
+        تصفح أفضل العلامات التجارية المتوفرة في متجرنا
+      </p>
+    </div>
+
+    {# Search brands #}
+    <div style="max-width:500px;margin:0 auto var(--md-sys-spacing-xl);">
+      <div style="display:flex;align-items:center;gap:8px;background:var(--md-sys-color-surface-container);border-radius:var(--md-sys-shape-corner-full);padding:4px 4px 4px 20px;">
+        <span class="material-symbols-rounded" style="color:var(--md-sys-color-on-surface-variant);font-size:22px;" aria-hidden="true">search</span>
+        <input
+          type="search"
+          placeholder="ابحث عن علامة تجارية..."
+          aria-label="البحث عن علامة تجارية"
+          data-brands-search
+          style="flex:1;border:none;background:transparent;font-size:var(--md-sys-typescale-body-large-size);color:var(--md-sys-color-on-surface);outline:none;padding:12px 0;"
+        >
+      </div>
+    </div>
+
+    {% if brands %}
+      {# Alphabet Navigation #}
+      {% set letters = [] %}
+      {% for brand in brands %}
+        {% set first_letter = brand.name | first | upper %}
+        {% if first_letter not in letters %}
+          {% set letters = letters | merge([first_letter]) %}
+        {% endif %}
+      {% endfor %}
+
+      {% if letters | length > 3 %}
+        <div class="md-chips" style="justify-content:center;margin-bottom:var(--md-sys-spacing-xl);" aria-label="التنقل الأبجدي">
+          {% for letter in letters %}
+            <a href="#brand-{{ letter }}" class="md-chip md-chip--suggestion" style="min-width:36px;justify-content:center;">{{ letter }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {# Brands Grid #}
+      <div class="brands-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--md-sys-spacing-md);padding-bottom:var(--md-sys-spacing-3xl);" data-brands-list>
+
+        {% for brand in brands %}
+          <a href="{{ brand.url }}" style="text-decoration:none;" data-animate data-delay="{{ loop.index * 40 }}">
+            <div class="brand-card" style="background:var(--md-sys-color-surface-container-lowest);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-lg);border:1px solid var(--md-sys-color-outline-variant);text-align:center;transition:box-shadow var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),transform var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized),border-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);">
+              {% if brand.logo %}
+                <img src="{{ brand.logo }}" alt="{{ brand.name }}" style="width:80px;height:80px;object-fit:contain;margin:0 auto var(--md-sys-spacing-md);display:block;" loading="lazy">
+              {% else %}
+                <div style="width:80px;height:80px;border-radius:var(--md-sys-shape-corner-full);background:var(--md-sys-color-primary-container);color:var(--md-sys-color-on-primary-container);display:flex;align-items:center;justify-content:center;margin:0 auto var(--md-sys-spacing-md);font-size:1.75rem;font-weight:700;">
+                  {{ brand.name | first | upper }}
+                </div>
+              {% endif %}
+              <div style="font-weight:600;font-size:var(--md-sys-typescale-title-small-size);color:var(--md-sys-color-on-surface);margin-bottom:4px;">
+                {{ brand.name }}
+              </div>
+              {% if brand.products_count %}
+                <div style="font-size:var(--md-sys-typescale-label-small-size);color:var(--md-sys-color-on-surface-variant);">
+                  {{ brand.products_count }} منتج
+                </div>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+
+      </div>
+
+    {% else %}
+      <div class="empty-state" style="padding:var(--md-sys-spacing-3xl) 0;">
+        <div class="empty-state__icon">
+          <span class="material-symbols-rounded" style="font-size:80px;color:var(--md-sys-color-primary);opacity:0.4;" aria-hidden="true">verified</span>
+        </div>
+        <h2 class="empty-state__title">لا توجد علامات تجارية</h2>
+        <p class="empty-state__desc">لم تتم إضافة علامات تجارية بعد</p>
+      </div>
+    {% endif %}
+
+  </div>
+{% endblock %}

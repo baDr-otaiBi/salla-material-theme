@@ -1,0 +1,137 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ brand.name }} - {{ store.name }}{% endblock %}
+{% block description %}تصفح منتجات {{ brand.name }} - {{ brand.description | striptags | truncate(120) ?? store.description }}{% endblock %}
+{% block body_class %}page-brand{% endblock %}
+
+{% block content %}
+  <div class="container" style="padding-top:var(--md-sys-spacing-lg);">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}/brands" class="md-breadcrumb__link">العلامات التجارية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">{{ brand.name }}</span>
+      </div>
+    </nav>
+
+    {# Brand Header #}
+    <div class="brand-header" style="display:flex;align-items:center;gap:var(--md-sys-spacing-xl);padding:var(--md-sys-spacing-xl);background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);margin-bottom:var(--md-sys-spacing-xl);border:1px solid var(--md-sys-color-outline-variant);flex-wrap:wrap;">
+      {% if brand.logo %}
+        <img src="{{ brand.logo }}" alt="{{ brand.name }}" style="width:100px;height:100px;object-fit:contain;flex-shrink:0;" loading="eager">
+      {% else %}
+        <div style="width:100px;height:100px;border-radius:var(--md-sys-shape-corner-extra-large);background:var(--md-sys-color-primary-container);color:var(--md-sys-color-on-primary-container);display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;flex-shrink:0;">
+          {{ brand.name | first | upper }}
+        </div>
+      {% endif %}
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <h1 style="font-size:var(--md-sys-typescale-headline-medium-size);font-weight:700;color:var(--md-sys-color-on-surface);">
+            {{ brand.name }}
+          </h1>
+          <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary);font-size:22px;" aria-label="علامة تجارية موثقة">verified</span>
+        </div>
+        {% if brand.description %}
+          <p style="color:var(--md-sys-color-on-surface-variant);font-size:var(--md-sys-typescale-body-medium-size);line-height:1.6;">
+            {{ brand.description | striptags | truncate(200) }}
+          </p>
+        {% endif %}
+        {% if brand.products_count %}
+          <div style="margin-top:8px;font-size:var(--md-sys-typescale-label-large-size);color:var(--md-sys-color-on-surface-variant);">
+            {{ brand.products_count }} منتج
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Toolbar #}
+    {% if products.data %}
+      <div class="products-toolbar">
+        <span class="products-toolbar__count" aria-live="polite">
+          {% if products.total %}
+            {{ products.total }} منتج
+          {% endif %}
+        </span>
+        <div class="products-toolbar__actions">
+          <div class="view-toggle" role="group" aria-label="طريقة العرض">
+            <button class="view-toggle__btn active" data-view="grid" aria-label="عرض شبكي" aria-pressed="true">
+              <span class="material-symbols-rounded" aria-hidden="true">grid_view</span>
+            </button>
+            <button class="view-toggle__btn" data-view="list" aria-label="عرض قائمة" aria-pressed="false">
+              <span class="material-symbols-rounded" aria-hidden="true">view_list</span>
+            </button>
+          </div>
+          <label class="sr-only" for="brand-sort">ترتيب حسب</label>
+          <select class="products-toolbar__sort" id="brand-sort"
+            onchange="window.location.href='{{ request.path }}?sort='+this.value">
+            <option value="newest" {% if request.query.sort == 'newest' %}selected{% endif %}>الأحدث</option>
+            <option value="sales" {% if request.query.sort == 'sales' %}selected{% endif %}>الأكثر مبيعاً</option>
+            <option value="price_asc" {% if request.query.sort == 'price_asc' %}selected{% endif %}>السعر: من الأقل</option>
+            <option value="price_desc" {% if request.query.sort == 'price_desc' %}selected{% endif %}>السعر: من الأعلى</option>
+          </select>
+        </div>
+      </div>
+    {% endif %}
+
+    {# Products Grid #}
+    {% if products.data %}
+      <div class="products-grid" id="products-grid" role="list">
+        {% for product in products.data %}
+          {% include 'views/components/product-card.twig' with {
+            product: product,
+            animate: true,
+            index: loop.index
+          } %}
+        {% endfor %}
+      </div>
+
+      {# Pagination #}
+      {% if products.last_page > 1 %}
+        <nav class="md-pagination" aria-label="التصفح بين الصفحات" style="display:flex;justify-content:center;gap:8px;margin-top:var(--md-sys-spacing-2xl);margin-bottom:var(--md-sys-spacing-2xl);flex-wrap:wrap;">
+          {% if products.current_page > 1 %}
+            <a href="{{ brand.url }}?page={{ products.current_page - 1 }}" class="md-btn md-btn--outlined" aria-label="الصفحة السابقة">
+              <span class="material-symbols-rounded" aria-hidden="true">chevron_right</span>
+              السابق
+            </a>
+          {% endif %}
+          {% for page in 1..products.last_page %}
+            {% if page == products.current_page %}
+              <span class="md-btn md-btn--filled" aria-current="page" style="min-width:40px;">{{ page }}</span>
+            {% elseif page == 1 or page == products.last_page or (page >= products.current_page - 2 and page <= products.current_page + 2) %}
+              <a href="{{ brand.url }}?page={{ page }}" class="md-btn md-btn--outlined" style="min-width:40px;" aria-label="الصفحة {{ page }}">{{ page }}</a>
+            {% elseif page == products.current_page - 3 or page == products.current_page + 3 %}
+              <span style="align-self:center;color:var(--md-sys-color-on-surface-variant);">...</span>
+            {% endif %}
+          {% endfor %}
+          {% if products.current_page < products.last_page %}
+            <a href="{{ brand.url }}?page={{ products.current_page + 1 }}" class="md-btn md-btn--outlined" aria-label="الصفحة التالية">
+              التالي
+              <span class="material-symbols-rounded" aria-hidden="true">chevron_left</span>
+            </a>
+          {% endif %}
+        </nav>
+      {% endif %}
+
+    {% else %}
+      <div class="empty-state" style="padding:var(--md-sys-spacing-3xl) 0;">
+        <div class="empty-state__icon">
+          <span class="material-symbols-rounded" style="font-size:80px;color:var(--md-sys-color-primary);opacity:0.4;" aria-hidden="true">inventory_2</span>
+        </div>
+        <h2 class="empty-state__title">لا توجد منتجات</h2>
+        <p class="empty-state__desc">لا توجد منتجات لهذه العلامة التجارية حالياً</p>
+        <a href="{{ store.url }}/products" class="md-btn md-btn--filled">
+          <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+          تصفح جميع المنتجات
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+{% endblock %}

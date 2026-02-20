@@ -1,0 +1,179 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ article.title }} - {{ store.name }}{% endblock %}
+{% block description %}{{ article.excerpt ?? article.content | striptags | truncate(160) }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ article.title }}{% endblock %}
+{% block og_description %}{{ article.excerpt ?? article.content | striptags | truncate(200) }}{% endblock %}
+{% block og_image %}{{ article.image ?? store.logo }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Article",
+  "headline": "{{ article.title | e('js') }}",
+  "description": "{{ article.excerpt ?? article.content | striptags | e('js') | truncate(300) }}",
+  "image": "{{ article.image ?? '' }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ article.author.name ?? store.name | e('js') }}"
+  },
+  "datePublished": "{{ article.created_at | date('Y-m-d') }}",
+  "dateModified": "{{ article.updated_at | date('Y-m-d') ?? article.created_at | date('Y-m-d') }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ store.name | e('js') }}",
+    "logo": { "@type": "ImageObject", "url": "{{ store.logo }}" }
+  }
+}
+</script>
+{% endblock %}
+
+{% block body_class %}page-article{% endblock %}
+
+{% block content %}
+  <div class="container" style="padding-top:var(--md-sys-spacing-lg);">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}/blog" class="md-breadcrumb__link">المدونة</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      {% if article.category %}
+        <div class="md-breadcrumb__item">
+          <a href="{{ article.category.url }}" class="md-breadcrumb__link">{{ article.category.name }}</a>
+          <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+        </div>
+      {% endif %}
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">{{ article.title | truncate(40) }}</span>
+      </div>
+    </nav>
+
+    <article class="article-content" style="max-width:800px;margin:0 auto;padding:var(--md-sys-spacing-xl) 0 var(--md-sys-spacing-3xl);">
+
+      {# Article Header #}
+      <header style="margin-bottom:var(--md-sys-spacing-xl);">
+        {% if article.category %}
+          <a href="{{ article.category.url }}" style="display:inline-flex;align-items:center;gap:6px;padding:4px 14px;background:var(--md-sys-color-primary-container);color:var(--md-sys-color-on-primary-container);border-radius:var(--md-sys-shape-corner-full);font-size:var(--md-sys-typescale-label-medium-size);font-weight:600;text-decoration:none;margin-bottom:var(--md-sys-spacing-md);">
+            {{ article.category.name }}
+          </a>
+        {% endif %}
+
+        <h1 style="font-size:clamp(1.75rem,4vw,2.75rem);font-weight:700;color:var(--md-sys-color-on-surface);line-height:1.25;margin-bottom:var(--md-sys-spacing-lg);">
+          {{ article.title }}
+        </h1>
+
+        {# Author & Meta #}
+        <div style="display:flex;align-items:center;gap:var(--md-sys-spacing-md);flex-wrap:wrap;">
+          {% if article.author %}
+            <div style="display:flex;align-items:center;gap:var(--md-sys-spacing-sm);">
+              <div style="width:40px;height:40px;border-radius:var(--md-sys-shape-corner-full);background:var(--md-sys-color-secondary-container);color:var(--md-sys-color-on-secondary-container);display:flex;align-items:center;justify-content:center;font-weight:700;">
+                {{ article.author.name | first | upper }}
+              </div>
+              <div>
+                <div style="font-weight:600;font-size:var(--md-sys-typescale-label-large-size);color:var(--md-sys-color-on-surface);">{{ article.author.name }}</div>
+                <div style="font-size:var(--md-sys-typescale-label-small-size);color:var(--md-sys-color-on-surface-variant);">
+                  {{ article.created_at | date('d M Y') }}
+                  {% if article.reading_time %}
+                    · {{ article.reading_time }} دقيقة قراءة
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div style="font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-on-surface-variant);">
+              {{ article.created_at | date('d M Y') }}
+              {% if article.reading_time %}
+                · {{ article.reading_time }} دقيقة قراءة
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </header>
+
+      {# Featured Image #}
+      {% if article.image %}
+        <div style="border-radius:var(--md-sys-shape-corner-extra-large);overflow:hidden;margin-bottom:var(--md-sys-spacing-2xl);">
+          <img src="{{ article.image }}" alt="{{ article.title }}" style="width:100%;height:auto;display:block;" loading="eager">
+        </div>
+      {% endif %}
+
+      {# Article Body #}
+      <div class="article-body" style="font-size:var(--md-sys-typescale-body-large-size);line-height:1.9;color:var(--md-sys-color-on-surface);">
+        {{ article.content | raw }}
+      </div>
+
+      {# Tags #}
+      {% if article.tags %}
+        <div style="margin-top:var(--md-sys-spacing-2xl);padding-top:var(--md-sys-spacing-lg);border-top:1px solid var(--md-sys-color-outline-variant);">
+          <div class="md-chips" role="list" aria-label="الوسوم">
+            {% for tag in article.tags %}
+              <a href="{{ store.url }}/blog?tag={{ tag.slug }}" class="md-chip md-chip--suggestion" role="listitem">
+                #{{ tag.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Share #}
+      <div style="margin-top:var(--md-sys-spacing-xl);padding:var(--md-sys-spacing-lg);background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--md-sys-spacing-md);">
+        <span style="font-weight:600;font-size:var(--md-sys-typescale-title-small-size);color:var(--md-sys-color-on-surface);">شارك المقال</span>
+        <div style="display:flex;gap:var(--md-sys-spacing-sm);">
+          <a href="https://twitter.com/intent/tweet?url={{ article.url }}&text={{ article.title }}" target="_blank" rel="noopener" class="md-icon-btn md-icon-btn--filled-tonal" aria-label="مشاركة على تويتر">
+            <span style="font-weight:bold;font-size:16px;">𝕏</span>
+          </a>
+          <a href="https://wa.me/?text={{ article.title }}%20{{ article.url }}" target="_blank" rel="noopener" class="md-icon-btn md-icon-btn--filled-tonal" aria-label="مشاركة على واتساب">
+            <span class="material-symbols-rounded" aria-hidden="true">chat</span>
+          </a>
+          <button onclick="navigator.clipboard.writeText(window.location.href)" class="md-icon-btn md-icon-btn--filled-tonal" aria-label="نسخ الرابط">
+            <span class="material-symbols-rounded" aria-hidden="true">link</span>
+          </button>
+        </div>
+      </div>
+
+    </article>
+
+    {# Related Articles #}
+    {% if related_articles %}
+      <section style="padding-bottom:var(--md-sys-spacing-3xl);">
+        <div class="section-header">
+          <h2 class="section-header__title">مقالات ذات صلة</h2>
+          <a href="{{ store.url }}/blog" class="md-btn md-btn--text">
+            جميع المقالات
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+          </a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--md-sys-spacing-lg);">
+          {% for related in related_articles | slice(0, 3) %}
+            <a href="{{ related.url }}" style="text-decoration:none;">
+              <article style="background:var(--md-sys-color-surface-container-lowest);border-radius:var(--md-sys-shape-corner-extra-large);overflow:hidden;border:1px solid var(--md-sys-color-outline-variant);transition:box-shadow var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);">
+                <div style="aspect-ratio:16/9;overflow:hidden;">
+                  {% if related.image %}
+                    <img src="{{ related.image }}" alt="{{ related.title }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+                  {% else %}
+                    <div style="width:100%;height:100%;background:linear-gradient(135deg,var(--md-sys-color-secondary-container),var(--md-sys-color-primary-container));display:flex;align-items:center;justify-content:center;">
+                      <span class="material-symbols-rounded" style="font-size:40px;opacity:0.4;" aria-hidden="true">article</span>
+                    </div>
+                  {% endif %}
+                </div>
+                <div style="padding:var(--md-sys-spacing-md);">
+                  <h3 style="font-size:var(--md-sys-typescale-title-small-size);font-weight:700;color:var(--md-sys-color-on-surface);margin-bottom:6px;">{{ related.title }}</h3>
+                  <span style="font-size:var(--md-sys-typescale-label-small-size);color:var(--md-sys-color-on-surface-variant);">{{ related.created_at | date('d M Y') }}</span>
+                </div>
+              </article>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+  </div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}اتصل بنا - {{ store.name }}{% endblock %}
+{% block body_class %}page-contact{% endblock %}
+
+{% block content %}
+  <div class="container" style="padding-top:var(--md-sys-spacing-lg);">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">اتصل بنا</span>
+      </div>
+    </nav>
+
+    {# Page Header #}
+    <div style="text-align:center;padding:var(--md-sys-spacing-2xl) 0 var(--md-sys-spacing-xl);">
+      <h1 class="md-headline-large" style="color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-sm);">اتصل بنا</h1>
+      <p style="color:var(--md-sys-color-on-surface-variant);font-size:var(--md-sys-typescale-body-large-size);max-width:500px;margin:0 auto;">
+        نسعد بتواصلك معنا! أرسل لنا رسالتك وسنرد عليك في أقرب وقت
+      </p>
+    </div>
+
+    {% if success %}
+      <div style="background:var(--md-sys-color-tertiary-container);color:var(--md-sys-color-on-tertiary-container);padding:var(--md-sys-spacing-lg);border-radius:var(--md-sys-shape-corner-large);margin-bottom:var(--md-sys-spacing-xl);text-align:center;">
+        <span class="material-symbols-rounded" style="font-size:32px;margin-bottom:8px;display:block;" aria-hidden="true">check_circle</span>
+        <strong>تم إرسال رسالتك بنجاح!</strong>
+        <p style="margin-top:4px;opacity:0.85;">سنتواصل معك قريباً.</p>
+      </div>
+    {% endif %}
+
+    <div class="contact-layout" style="display:grid;grid-template-columns:1fr 380px;gap:var(--md-sys-spacing-xl);align-items:start;padding-bottom:var(--md-sys-spacing-3xl);">
+
+      {# Contact Form #}
+      <div style="background:var(--md-sys-color-surface-container-lowest);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-xl);border:1px solid var(--md-sys-color-outline-variant);">
+        <h2 style="font-size:var(--md-sys-typescale-title-large-size);font-weight:700;color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-lg);display:flex;align-items:center;gap:8px;">
+          <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary)" aria-hidden="true">mail</span>
+          أرسل لنا رسالة
+        </h2>
+
+        {% if error %}
+          <div style="background:var(--md-sys-color-error-container);color:var(--md-sys-color-on-error-container);padding:12px 16px;border-radius:var(--md-sys-shape-corner-medium);margin-bottom:var(--md-sys-spacing-md);font-size:var(--md-sys-typescale-body-medium-size);">
+            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-inline-end:6px" aria-hidden="true">error</span>
+            {{ error }}
+          </div>
+        {% endif %}
+
+        <form method="POST" action="{{ store.url }}/contact" novalidate style="display:flex;flex-direction:column;gap:var(--md-sys-spacing-md);">
+          {{ csrf_field() }}
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--md-sys-spacing-md);">
+            <div class="md-field">
+              <label class="md-field__label" for="contact-name">الاسم</label>
+              <input class="md-field__input" type="text" id="contact-name" name="name" required autocomplete="name" value="{{ customer.name ?? old.name }}">
+            </div>
+            <div class="md-field">
+              <label class="md-field__label" for="contact-email">البريد الإلكتروني</label>
+              <input class="md-field__input" type="email" id="contact-email" name="email" required autocomplete="email" value="{{ customer.email ?? old.email }}">
+            </div>
+          </div>
+
+          <div class="md-field">
+            <label class="md-field__label" for="contact-phone">رقم الجوال (اختياري)</label>
+            <input class="md-field__input" type="tel" id="contact-phone" name="phone" autocomplete="tel" value="{{ customer.phone ?? old.phone }}">
+          </div>
+
+          <div class="md-field">
+            <label class="md-field__label" for="contact-subject">الموضوع</label>
+            <select class="md-field__input" id="contact-subject" name="subject" required>
+              <option value="">اختر الموضوع</option>
+              <option value="general" {% if old.subject == 'general' %}selected{% endif %}>استفسار عام</option>
+              <option value="order" {% if old.subject == 'order' %}selected{% endif %}>استفسار عن طلب</option>
+              <option value="product" {% if old.subject == 'product' %}selected{% endif %}>استفسار عن منتج</option>
+              <option value="return" {% if old.subject == 'return' %}selected{% endif %}>إرجاع أو استبدال</option>
+              <option value="complaint" {% if old.subject == 'complaint' %}selected{% endif %}>شكوى</option>
+              <option value="suggestion" {% if old.subject == 'suggestion' %}selected{% endif %}>اقتراح</option>
+            </select>
+          </div>
+
+          <div class="md-field">
+            <label class="md-field__label" for="contact-message">الرسالة</label>
+            <textarea class="md-field__textarea" id="contact-message" name="message" rows="5" required placeholder="اكتب رسالتك هنا...">{{ old.message }}</textarea>
+          </div>
+
+          <div>
+            <button type="submit" class="md-btn md-btn--filled md-btn--lg">
+              <span class="material-symbols-rounded" aria-hidden="true">send</span>
+              إرسال الرسالة
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {# Contact Info Sidebar #}
+      <div style="display:flex;flex-direction:column;gap:var(--md-sys-spacing-md);">
+
+        {# Info Cards #}
+        {% if store.phone %}
+          <div style="background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-lg);border:1px solid var(--md-sys-color-outline-variant);display:flex;align-items:center;gap:var(--md-sys-spacing-md);">
+            <div style="width:48px;height:48px;border-radius:var(--md-sys-shape-corner-large);background:var(--md-sys-color-primary-container);color:var(--md-sys-color-on-primary-container);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="material-symbols-rounded" aria-hidden="true">call</span>
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:var(--md-sys-typescale-title-small-size);color:var(--md-sys-color-on-surface);">اتصل بنا</div>
+              <a href="tel:{{ store.phone }}" style="color:var(--md-sys-color-primary);font-size:var(--md-sys-typescale-body-medium-size);direction:ltr;display:inline-block;">{{ store.phone }}</a>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if store.email %}
+          <div style="background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-lg);border:1px solid var(--md-sys-color-outline-variant);display:flex;align-items:center;gap:var(--md-sys-spacing-md);">
+            <div style="width:48px;height:48px;border-radius:var(--md-sys-shape-corner-large);background:var(--md-sys-color-secondary-container);color:var(--md-sys-color-on-secondary-container);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="material-symbols-rounded" aria-hidden="true">mail</span>
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:var(--md-sys-typescale-title-small-size);color:var(--md-sys-color-on-surface);">البريد الإلكتروني</div>
+              <a href="mailto:{{ store.email }}" style="color:var(--md-sys-color-primary);font-size:var(--md-sys-typescale-body-medium-size);">{{ store.email }}</a>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if store.address %}
+          <div style="background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-lg);border:1px solid var(--md-sys-color-outline-variant);display:flex;align-items:center;gap:var(--md-sys-spacing-md);">
+            <div style="width:48px;height:48px;border-radius:var(--md-sys-shape-corner-large);background:var(--md-sys-color-tertiary-container);color:var(--md-sys-color-on-tertiary-container);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="material-symbols-rounded" aria-hidden="true">location_on</span>
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:var(--md-sys-typescale-title-small-size);color:var(--md-sys-color-on-surface);">العنوان</div>
+              <div style="color:var(--md-sys-color-on-surface-variant);font-size:var(--md-sys-typescale-body-medium-size);">{{ store.address }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+        {# Working hours #}
+        <div style="background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-lg);border:1px solid var(--md-sys-color-outline-variant);">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:var(--md-sys-spacing-md);">
+            <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary)" aria-hidden="true">schedule</span>
+            <span style="font-weight:600;font-size:var(--md-sys-typescale-title-small-size);color:var(--md-sys-color-on-surface);">ساعات العمل</span>
+          </div>
+          <div style="font-size:var(--md-sys-typescale-body-medium-size);color:var(--md-sys-color-on-surface-variant);line-height:1.8;">
+            السبت - الخميس: 9:00 ص - 10:00 م<br>
+            الجمعة: 4:00 م - 10:00 م
+          </div>
+        </div>
+
+        {# Social Media #}
+        {% if settings.social_twitter or settings.social_instagram or settings.social_snapchat %}
+          <div style="background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-lg);border:1px solid var(--md-sys-color-outline-variant);">
+            <div style="font-weight:600;font-size:var(--md-sys-typescale-title-small-size);color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-md);">تابعنا</div>
+            <div style="display:flex;gap:var(--md-sys-spacing-sm);">
+              {% if settings.social_twitter %}
+                <a href="{{ settings.social_twitter }}" target="_blank" rel="noopener" class="md-icon-btn md-icon-btn--filled-tonal" aria-label="تويتر">
+                  <span style="font-weight:bold;font-size:16px;">𝕏</span>
+                </a>
+              {% endif %}
+              {% if settings.social_instagram %}
+                <a href="{{ settings.social_instagram }}" target="_blank" rel="noopener" class="md-icon-btn md-icon-btn--filled-tonal" aria-label="انستقرام">
+                  <span class="material-symbols-rounded" aria-hidden="true">photo_camera</span>
+                </a>
+              {% endif %}
+              {% if settings.social_snapchat %}
+                <a href="{{ settings.social_snapchat }}" target="_blank" rel="noopener" class="md-icon-btn md-icon-btn--filled-tonal" aria-label="سناب شات">
+                  <span class="material-symbols-rounded" aria-hidden="true">camera</span>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

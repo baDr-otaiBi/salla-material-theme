@@ -1,0 +1,179 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}حسابي - {{ store.name }}{% endblock %}
+{% block body_class %}page-profile{% endblock %}
+
+{% block content %}
+  <div class="container" style="padding-top:var(--md-sys-spacing-lg);">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">حسابي</span>
+      </div>
+    </nav>
+
+    {# Profile Header #}
+    <div class="profile-header" style="display:flex;align-items:center;gap:var(--md-sys-spacing-lg);margin-bottom:var(--md-sys-spacing-2xl);flex-wrap:wrap;">
+      <div style="width:80px;height:80px;border-radius:var(--md-sys-shape-corner-full);background:var(--md-sys-color-primary-container);color:var(--md-sys-color-on-primary-container);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;flex-shrink:0;">
+        {{ customer.name | first | upper }}
+      </div>
+      <div>
+        <h1 style="font-size:var(--md-sys-typescale-headline-medium-size);font-weight:700;color:var(--md-sys-color-on-surface);">
+          أهلاً، {{ customer.first_name ?? customer.name }}!
+        </h1>
+        <p style="color:var(--md-sys-color-on-surface-variant);font-size:var(--md-sys-typescale-body-medium-size);">{{ customer.email }}</p>
+      </div>
+      <div style="margin-inline-start:auto;">
+        <a href="{{ store.url }}/logout" class="md-btn md-btn--outlined md-btn--sm">
+          <span class="material-symbols-rounded" aria-hidden="true">logout</span>
+          تسجيل الخروج
+        </a>
+      </div>
+    </div>
+
+    <div class="profile-layout" style="display:grid;grid-template-columns:280px 1fr;gap:var(--md-sys-spacing-xl);align-items:start;">
+
+      {# Sidebar Navigation #}
+      <aside class="profile-sidebar" style="background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-md);border:1px solid var(--md-sys-color-outline-variant);">
+        <nav aria-label="قائمة الحساب">
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;">
+            <li>
+              <a href="#orders" class="md-list-item active" style="padding:12px 16px;border-radius:var(--md-sys-shape-corner-large);display:flex;align-items:center;gap:12px;">
+                <span class="material-symbols-rounded" style="font-size:22px" aria-hidden="true">receipt_long</span>
+                طلباتي
+              </a>
+            </li>
+            <li>
+              <a href="{{ store.url }}/wishlist" class="md-list-item" style="padding:12px 16px;border-radius:var(--md-sys-shape-corner-large);display:flex;align-items:center;gap:12px;">
+                <span class="material-symbols-rounded" style="font-size:22px" aria-hidden="true">favorite</span>
+                المفضلة
+              </a>
+            </li>
+            <li>
+              <a href="#addresses" class="md-list-item" style="padding:12px 16px;border-radius:var(--md-sys-shape-corner-large);display:flex;align-items:center;gap:12px;">
+                <span class="material-symbols-rounded" style="font-size:22px" aria-hidden="true">location_on</span>
+                العناوين
+              </a>
+            </li>
+            <li>
+              <a href="#settings" class="md-list-item" style="padding:12px 16px;border-radius:var(--md-sys-shape-corner-large);display:flex;align-items:center;gap:12px;">
+                <span class="material-symbols-rounded" style="font-size:22px" aria-hidden="true">settings</span>
+                إعدادات الحساب
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      {# Main Content #}
+      <div class="profile-content">
+
+        {# Quick Stats #}
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--md-sys-spacing-md);margin-bottom:var(--md-sys-spacing-xl);">
+          <div style="background:var(--md-sys-color-primary-container);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-lg);text-align:center;">
+            <div style="font-size:2rem;font-weight:700;color:var(--md-sys-color-on-primary-container);">{{ customer.orders_count ?? 0 }}</div>
+            <div style="font-size:var(--md-sys-typescale-label-medium-size);color:var(--md-sys-color-on-primary-container);opacity:0.8;">طلب</div>
+          </div>
+          <div style="background:var(--md-sys-color-secondary-container);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-lg);text-align:center;">
+            <div style="font-size:2rem;font-weight:700;color:var(--md-sys-color-on-secondary-container);">{{ customer.wishlist_count ?? 0 }}</div>
+            <div style="font-size:var(--md-sys-typescale-label-medium-size);color:var(--md-sys-color-on-secondary-container);opacity:0.8;">مفضلة</div>
+          </div>
+          <div style="background:var(--md-sys-color-tertiary-container);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-lg);text-align:center;">
+            <div style="font-size:2rem;font-weight:700;color:var(--md-sys-color-on-tertiary-container);">{{ customer.wallet_balance.formatted ?? '0 ر.س' }}</div>
+            <div style="font-size:var(--md-sys-typescale-label-medium-size);color:var(--md-sys-color-on-tertiary-container);opacity:0.8;">رصيد المحفظة</div>
+          </div>
+        </div>
+
+        {# Orders Section #}
+        <section id="orders">
+          <h2 style="font-size:var(--md-sys-typescale-title-large-size);font-weight:700;color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-lg);display:flex;align-items:center;gap:8px;">
+            <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary)" aria-hidden="true">receipt_long</span>
+            طلباتي الأخيرة
+          </h2>
+
+          {% if customer.orders %}
+            <div style="display:flex;flex-direction:column;gap:var(--md-sys-spacing-md);">
+              {% for order in customer.orders %}
+                <a href="{{ store.url }}/orders/{{ order.id }}" style="text-decoration:none;">
+                  <div style="background:var(--md-sys-color-surface-container-lowest);border-radius:var(--md-sys-shape-corner-large);padding:var(--md-sys-spacing-md);border:1px solid var(--md-sys-color-outline-variant);display:flex;align-items:center;gap:var(--md-sys-spacing-md);transition:box-shadow var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),border-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);flex-wrap:wrap;">
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-weight:600;font-size:var(--md-sys-typescale-title-small-size);color:var(--md-sys-color-on-surface);">
+                        طلب #{{ order.reference_id }}
+                      </div>
+                      <div style="font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-on-surface-variant);margin-top:4px;">
+                        {{ order.created_at | date('d/m/Y') }} · {{ order.items_count ?? order.items | length }} منتج
+                      </div>
+                    </div>
+                    <div style="font-weight:700;color:var(--md-sys-color-primary);font-size:var(--md-sys-typescale-title-small-size);">
+                      {{ order.total.formatted }}
+                    </div>
+                    <span style="padding:6px 14px;border-radius:var(--md-sys-shape-corner-full);font-size:var(--md-sys-typescale-label-small-size);font-weight:600;background:var(--md-sys-color-surface-container-high);color:var(--md-sys-color-on-surface-variant);">
+                      {{ order.status_name ?? order.status }}
+                    </span>
+                    <span class="material-symbols-rounded" style="color:var(--md-sys-color-on-surface-variant)" aria-hidden="true">chevron_left</span>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty-state" style="padding:var(--md-sys-spacing-2xl) 0;">
+              <div class="empty-state__icon">
+                <span class="material-symbols-rounded" style="font-size:64px;color:var(--md-sys-color-primary);opacity:0.5;" aria-hidden="true">receipt_long</span>
+              </div>
+              <h3 class="empty-state__title">لا توجد طلبات بعد</h3>
+              <p class="empty-state__desc">ابدأ التسوق واطلب منتجاتك المفضلة</p>
+              <a href="{{ store.url }}/products" class="md-btn md-btn--filled">
+                <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+                تسوق الآن
+              </a>
+            </div>
+          {% endif %}
+        </section>
+
+        {# Account Settings #}
+        <section id="settings" style="margin-top:var(--md-sys-spacing-2xl);">
+          <h2 style="font-size:var(--md-sys-typescale-title-large-size);font-weight:700;color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-lg);display:flex;align-items:center;gap:8px;">
+            <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary)" aria-hidden="true">settings</span>
+            إعدادات الحساب
+          </h2>
+
+          <div style="background:var(--md-sys-color-surface-container-lowest);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-xl);border:1px solid var(--md-sys-color-outline-variant);">
+            <form method="POST" action="{{ store.url }}/profile/update" style="display:flex;flex-direction:column;gap:var(--md-sys-spacing-md);">
+              {{ csrf_field() }}
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--md-sys-spacing-md);">
+                <div class="md-field">
+                  <label class="md-field__label" for="profile-name">الاسم</label>
+                  <input class="md-field__input" type="text" id="profile-name" name="name" value="{{ customer.name }}" required>
+                </div>
+                <div class="md-field">
+                  <label class="md-field__label" for="profile-phone">رقم الجوال</label>
+                  <input class="md-field__input" type="tel" id="profile-phone" name="phone" value="{{ customer.phone }}">
+                </div>
+              </div>
+
+              <div class="md-field">
+                <label class="md-field__label" for="profile-email">البريد الإلكتروني</label>
+                <input class="md-field__input" type="email" id="profile-email" name="email" value="{{ customer.email }}" required>
+              </div>
+
+              <div>
+                <button type="submit" class="md-btn md-btn--filled">
+                  <span class="material-symbols-rounded" aria-hidden="true">save</span>
+                  حفظ التغييرات
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
