@@ -1,0 +1,50 @@
+{
+  "name": "Material You - Salla Theme",
+  "version": "1.0.0",
+  "description": "ثيم متجر سلة بطابع Material You (Material Design 3) - تصميم عصري وأنيق مع دعم كامل للعربية",
+  "author": {
+    "name": "baDr-otaiBi",
+    "url": "https://github.com/baDr-otaiBi"
+  },
+  "preview": "assets/images/preview.jpg",
+  "screenshot": "assets/images/screenshot.png",
+  "tags": ["material", "modern", "rtl", "arabic", "material-you", "material-design-3"],
+  "layouts": {
+    "home": "views/pages/home.twig",
+    "products": "views/pages/products.twig",
+    "product": "views/pages/product.twig",
+    "cart": "views/pages/cart.twig",
+    "checkout": "views/pages/checkout.twig",
+    "order": "views/pages/order.twig",
+    "profile": "views/pages/profile.twig",
+    "search": "views/pages/search.twig",
+    "page": "views/pages/page.twig",
+    "blog": "views/pages/blog.twig",
+    "article": "views/pages/article.twig",
+    "contact": "views/pages/contact.twig",
+    "login": "views/pages/login.twig",
+    "register": "views/pages/register.twig",
+    "wishlist": "views/pages/wishlist.twig",
+    "brand": "views/pages/brand.twig",
+    "brands": "views/pages/brands.twig"
+  },
+  "assets": {
+    "css": [
+      "assets/css/tokens.css",
+      "assets/css/base.css",
+      "assets/css/components.css",
+      "assets/css/layout.css",
+      "assets/css/pages.css",
+      "assets/css/animations.css"
+    ],
+    "js": [
+      "assets/js/material-color-utils.js",
+      "assets/js/theme.js",
+      "assets/js/cart.js",
+      "assets/js/product.js"
+    ]
+  },
+  "settings": "config/settings.json",
+  "rtl": true,
+  "direction": "rtl"
+}

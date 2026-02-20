@@ -1,0 +1,160 @@
+{#
+  Mobile Navigation Drawer
+  Salla Material Theme
+#}
+
+<nav
+  id="site-drawer"
+  class="site-drawer"
+  role="navigation"
+  aria-label="قائمة الموبايل"
+  aria-hidden="true"
+>
+
+  {# Drawer Header #}
+  <div class="site-drawer__header">
+    <a href="{{ store.url }}" class="header__logo">
+      {% if settings.store_logo %}
+        <img src="{{ settings.store_logo }}" alt="{{ store.name }}" height="36">
+      {% else %}
+        <span class="md-headline-small" style="font-weight:700">{{ store.name }}</span>
+      {% endif %}
+    </a>
+    <button
+      class="md-icon-btn"
+      data-drawer-toggle
+      aria-label="إغلاق القائمة"
+    >
+      <span class="material-symbols-rounded" aria-hidden="true">close</span>
+    </button>
+  </div>
+
+  {# Customer greeting #}
+  {% if customer %}
+    <div style="padding: 16px 24px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container);">
+      <div style="font-size:0.875rem; margin-bottom:4px;">أهلاً،</div>
+      <div style="font-size:1.1rem; font-weight:700;">{{ customer.first_name }}</div>
+    </div>
+  {% endif %}
+
+  {# Navigation Links #}
+  <div class="site-drawer__nav">
+
+    <a href="{{ store.url }}" class="site-drawer__nav-link {% if current_page == 'home' %}active{% endif %}">
+      <span class="material-symbols-rounded" aria-hidden="true">home</span>
+      الرئيسية
+    </a>
+
+    {% for category in store.categories | slice(0, 8) %}
+      <a href="{{ category.url }}" class="site-drawer__nav-link {% if current_category.id == category.id %}active{% endif %}">
+        <span class="material-symbols-rounded" aria-hidden="true">category</span>
+        {{ category.name }}
+        {% if category.children is not empty %}
+          <span class="material-symbols-rounded" style="margin-inline-start:auto;font-size:18px" aria-hidden="true">chevron_left</span>
+        {% endif %}
+      </a>
+    {% endfor %}
+
+    <div class="md-divider" style="margin: 8px 0;"></div>
+
+    <a href="{{ store.url }}/search" class="site-drawer__nav-link">
+      <span class="material-symbols-rounded" aria-hidden="true">search</span>
+      البحث
+    </a>
+
+    {% if settings.show_wishlist %}
+      <a href="{{ store.url }}/wishlist" class="site-drawer__nav-link">
+        <span class="material-symbols-rounded" aria-hidden="true">favorite</span>
+        المفضلة
+      </a>
+    {% endif %}
+
+    {% if customer %}
+      <a href="{{ store.url }}/account" class="site-drawer__nav-link">
+        <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
+        حسابي
+      </a>
+      <a href="{{ store.url }}/account/orders" class="site-drawer__nav-link">
+        <span class="material-symbols-rounded" aria-hidden="true">receipt_long</span>
+        طلباتي
+      </a>
+      <a href="{{ store.url }}/logout" class="site-drawer__nav-link">
+        <span class="material-symbols-rounded" aria-hidden="true">logout</span>
+        تسجيل الخروج
+      </a>
+    {% else %}
+      <a href="{{ store.url }}/login" class="site-drawer__nav-link">
+        <span class="material-symbols-rounded" aria-hidden="true">login</span>
+        تسجيل الدخول
+      </a>
+      <a href="{{ store.url }}/register" class="site-drawer__nav-link">
+        <span class="material-symbols-rounded" aria-hidden="true">person_add</span>
+        إنشاء حساب
+      </a>
+    {% endif %}
+
+  </div>
+
+  {# Drawer Footer #}
+  <div class="site-drawer__footer">
+
+    {# Dark Mode Toggle #}
+    {% if settings.dark_mode_toggle %}
+      <button
+        class="md-btn md-btn--outlined md-btn--full"
+        data-theme-toggle
+        style="justify-content:center;gap:8px"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">dark_mode</span>
+        تبديل المظهر
+      </button>
+    {% endif %}
+
+    {# Color Scheme #}
+    <div>
+      <div style="font-size:0.75rem;color:var(--md-sys-color-on-surface-variant);margin-bottom:8px;font-weight:600;">لون الثيم</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        {% set schemes = [
+          { id: 'blue',   color: '#006493', label: 'أزرق' },
+          { id: 'purple', color: '#6b33ec', label: 'بنفسجي' },
+          { id: 'green',  color: '#006e2c', label: 'أخضر' },
+          { id: 'orange', color: '#964500', label: 'برتقالي' },
+          { id: 'red',    color: '#bf0033', label: 'أحمر' },
+          { id: 'teal',   color: '#006a6b', label: 'فيروزي' },
+        ] %}
+        {% for scheme in schemes %}
+          <button
+            class="color-swatch {% if settings.color_scheme == scheme.id %}selected{% endif %}"
+            style="background-color: {{ scheme.color }}; width:32px; height:32px;"
+            data-color-scheme-btn="{{ scheme.id }}"
+            title="{{ scheme.label }}"
+            aria-label="{{ scheme.label }}"
+          ></button>
+        {% endfor %}
+      </div>
+    </div>
+
+    {# Store social links #}
+    {% if settings.show_social_links and store.social %}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        {% if store.social.twitter %}
+          <a href="{{ store.social.twitter }}" class="footer__social-link" target="_blank" rel="noopener" aria-label="تويتر">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.631 5.905-5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+        {% endif %}
+        {% if store.social.instagram %}
+          <a href="{{ store.social.instagram }}" class="footer__social-link" target="_blank" rel="noopener" aria-label="إنستغرام">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+        {% endif %}
+        {% if store.social.snapchat %}
+          <a href="{{ store.social.snapchat }}" class="footer__social-link" target="_blank" rel="noopener" aria-label="سناب شات">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5.829 14.998c-.324.03-.648.063-.87.171-.27.134-.405.417-.405.674 0 .404.368.674.774.674.19 0 .389-.047.593-.143.435-.21.816-.63 1.108-1.376zm6.342 0c.292.746.673 1.166 1.108 1.376.204.096.403.143.593.143.406 0 .774-.27.774-.674 0-.257-.135-.54-.405-.674-.222-.108-.546-.141-.87-.171zM12 2.25C6.615 2.25 2.25 6.615 2.25 12S6.615 21.75 12 21.75 21.75 17.385 21.75 12 17.385 2.25 12 2.25zm0 3.75c2.899 0 5.25 2.351 5.25 5.25 0 .638-.117 1.258-.331 1.836.148.044.298.066.449.066.45 0 .888-.176 1.2-.476.098-.093.226-.145.357-.145.283 0 .504.218.504.492 0 .197-.12.38-.31.467-.627.289-1.372.432-2.253.432-.07 0-.14-.002-.21-.006A5.228 5.228 0 0112 17.25a5.228 5.228 0 01-4.656-2.83c-.07.004-.14.006-.21.006-.881 0-1.626-.143-2.253-.432-.19-.087-.31-.27-.31-.467 0-.274.221-.492.504-.492.131 0 .259.052.357.145.312.3.75.476 1.2.476.151 0 .301-.022.449-.066A5.235 5.235 0 016.75 11.25c0-2.899 2.351-5.25 5.25-5.25z"/></svg>
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  </div>
+
+</nav>

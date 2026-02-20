@@ -1,0 +1,254 @@
+/*
+ * Animations - Material You Motion
+ * Salla Material Theme
+ */
+
+/* ===================================================
+   KEYFRAMES
+   =================================================== */
+
+/* Fade in */
+@keyframes md-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Fade in up */
+@keyframes md-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in down */
+@keyframes md-fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale in */
+@keyframes md-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Dialog enter */
+@keyframes md-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Circular progress */
+@keyframes md-circular-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes md-circular-dash {
+  0%   { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+  50%  { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+}
+
+/* Linear progress */
+@keyframes md-linear-progress {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+/* Ripple */
+@keyframes md-ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Shimmer (skeleton loading) */
+@keyframes md-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Bounce */
+@keyframes md-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+/* Shake */
+@keyframes md-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+/* Pulse */
+@keyframes md-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* Heart beat */
+@keyframes md-heartbeat {
+  0%, 100% { transform: scale(1); }
+  14%       { transform: scale(1.3); }
+  28%       { transform: scale(1); }
+  42%       { transform: scale(1.3); }
+  70%       { transform: scale(1); }
+}
+
+/* Slide in from right */
+@keyframes md-slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+/* Slide in from left */
+@keyframes md-slide-in-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+/* Slide out right */
+@keyframes md-slide-out-right {
+  from { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(100%); opacity: 0; }
+}
+
+/* Drawer slide */
+@keyframes md-drawer-enter {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* Count up badge */
+@keyframes md-badge-pop {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* ===================================================
+   ANIMATION CLASSES
+   =================================================== */
+.md-animate-fade-in {
+  animation: md-fade-in var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard) both;
+}
+.md-animate-fade-in-up {
+  animation: md-fade-in-up var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate) both;
+}
+.md-animate-scale-in {
+  animation: md-scale-in var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate) both;
+}
+
+/* Staggered animation delays */
+.md-stagger-1 { animation-delay: 50ms; }
+.md-stagger-2 { animation-delay: 100ms; }
+.md-stagger-3 { animation-delay: 150ms; }
+.md-stagger-4 { animation-delay: 200ms; }
+.md-stagger-5 { animation-delay: 250ms; }
+.md-stagger-6 { animation-delay: 300ms; }
+
+/* ===================================================
+   SKELETON LOADER
+   =================================================== */
+.md-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--md-sys-color-surface-container-high) 25%,
+    var(--md-sys-color-surface-container-highest) 50%,
+    var(--md-sys-color-surface-container-high) 75%
+  );
+  background-size: 200% 100%;
+  animation: md-shimmer 1.5s infinite;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+}
+.md-skeleton--text {
+  height: 1em;
+  border-radius: var(--md-sys-shape-corner-full);
+}
+.md-skeleton--circle {
+  border-radius: 50%;
+}
+.md-skeleton--card {
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+/* ===================================================
+   RIPPLE EFFECT
+   =================================================== */
+.md-ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+.md-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.1;
+  transform: scale(0);
+  animation: md-ripple 600ms linear;
+  pointer-events: none;
+}
+
+/* ===================================================
+   PAGE TRANSITIONS
+   =================================================== */
+.page-enter {
+  animation: md-fade-in-up var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+/* ===================================================
+   HERO ANIMATIONS
+   =================================================== */
+.hero__content > * {
+  animation: md-fade-in-up var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate) both;
+}
+.hero__content > *:nth-child(1) { animation-delay: 100ms; }
+.hero__content > *:nth-child(2) { animation-delay: 200ms; }
+.hero__content > *:nth-child(3) { animation-delay: 300ms; }
+.hero__content > *:nth-child(4) { animation-delay: 400ms; }
+
+/* Product card entrance */
+.product-card {
+  animation: md-fade-in-up var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate) both;
+}
+
+/* ===================================================
+   REDUCED MOTION
+   =================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

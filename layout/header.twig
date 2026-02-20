@@ -1,0 +1,169 @@
+{#
+  Header Component - Material You Style
+  Salla Material Theme
+#}
+
+<header class="site-header site-header--{{ settings.header_style ?? 'surface' }}" role="banner">
+  <div class="container">
+    <div class="header__inner">
+
+      {# Mobile: Menu Toggle #}
+      <button
+        class="header__menu-toggle md-icon-btn"
+        data-drawer-toggle
+        aria-label="القائمة"
+        aria-expanded="false"
+        aria-controls="site-drawer"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">menu</span>
+      </button>
+
+      {# Logo #}
+      <a href="{{ store.url }}" class="header__logo" aria-label="{{ store.name }} - الصفحة الرئيسية">
+        {% if settings.store_logo %}
+          <img
+            src="{{ settings.store_logo }}"
+            alt="{{ store.name }}"
+            width="120"
+            height="40"
+            loading="eager"
+          >
+        {% else %}
+          <span class="header__logo-text">{{ store.name }}</span>
+        {% endif %}
+      </a>
+
+      {# Desktop Navigation #}
+      <nav class="header__nav" aria-label="التنقل الرئيسي">
+        <ul class="header__nav-list" role="list">
+
+          <li class="header__nav-item">
+            <a href="{{ store.url }}"
+              class="header__nav-link {% if current_page == 'home' %}active{% endif %}"
+            >
+              الرئيسية
+            </a>
+          </li>
+
+          {# Dynamic categories from Salla #}
+          {% for category in store.categories | slice(0, 6) %}
+            <li class="header__nav-item">
+              {% if category.children is not empty %}
+                <button class="header__nav-link" aria-haspopup="true" aria-expanded="false">
+                  {{ category.name }}
+                  <span class="material-symbols-rounded" style="font-size:18px;margin-inline-start:2px" aria-hidden="true">expand_more</span>
+                </button>
+                <div class="header__dropdown" role="menu">
+                  {% for child in category.children %}
+                    <a href="{{ child.url }}" role="menuitem">
+                      {{ child.name }}
+                    </a>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <a href="{{ category.url }}"
+                  class="header__nav-link {% if current_category.id == category.id %}active{% endif %}"
+                >
+                  {{ category.name }}
+                </a>
+              {% endif %}
+            </li>
+          {% endfor %}
+
+        </ul>
+      </nav>
+
+      {# Search Bar (desktop) #}
+      {% if settings.show_search %}
+        <div class="header__search">
+          <form class="md-search-field" action="{{ store.url }}/search" method="GET" role="search">
+            <span class="material-symbols-rounded" aria-hidden="true" style="color:var(--md-sys-color-on-surface-variant);font-size:20px">search</span>
+            <input
+              type="search"
+              name="q"
+              placeholder="ابحث عن منتجات..."
+              aria-label="البحث في المتجر"
+              value="{{ request.query.q ?? '' }}"
+              autocomplete="off"
+            >
+            <button type="submit" class="sr-only">بحث</button>
+          </form>
+        </div>
+      {% endif %}
+
+      {# Header Actions #}
+      <div class="header__actions">
+
+        {# Search icon (mobile) #}
+        {% if settings.show_search %}
+          <a href="{{ store.url }}/search" class="md-icon-btn" aria-label="بحث" style="display:none" id="mobile-search-btn">
+            <span class="material-symbols-rounded" aria-hidden="true">search</span>
+          </a>
+        {% endif %}
+
+        {# Dark mode toggle #}
+        {% if settings.dark_mode_toggle %}
+          <button
+            class="md-icon-btn"
+            data-theme-toggle
+            aria-label="تبديل الوضع الداكن/الفاتح"
+            title="تبديل المظهر"
+          >
+            <span data-theme-icon>
+              {# Icon injected by JS #}
+              <span class="material-symbols-rounded" aria-hidden="true">dark_mode</span>
+            </span>
+          </button>
+        {% endif %}
+
+        {# Wishlist #}
+        {% if settings.show_wishlist %}
+          <a href="{{ store.url }}/wishlist" class="md-icon-btn" aria-label="المفضلة">
+            <span class="material-symbols-rounded" aria-hidden="true">favorite</span>
+          </a>
+        {% endif %}
+
+        {# Account #}
+        {% if customer %}
+          <a href="{{ store.url }}/account" class="md-icon-btn" aria-label="حسابي">
+            <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
+          </a>
+        {% else %}
+          <a href="{{ store.url }}/login" class="md-icon-btn" aria-label="تسجيل الدخول">
+            <span class="material-symbols-rounded" aria-hidden="true">person</span>
+          </a>
+        {% endif %}
+
+        {# Cart #}
+        {% if settings.show_cart %}
+          <a href="{{ store.url }}/cart"
+            class="md-icon-btn header__cart-btn"
+            aria-label="سلة التسوق ({{ cart.count ?? 0 }} منتجات)"
+            data-open-cart
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+            {% if cart.count > 0 %}
+              <span class="md-badge" data-cart-count aria-label="{{ cart.count }} منتجات في السلة">
+                {{ cart.count }}
+              </span>
+            {% else %}
+              <span class="md-badge" data-cart-count style="display:none" aria-hidden="true">0</span>
+            {% endif %}
+          </a>
+        {% endif %}
+
+      </div>
+      {# /header__actions #}
+
+    </div>
+    {# /header__inner #}
+  </div>
+  {# /container #}
+</header>
+
+<style>
+  @media (max-width: 600px) {
+    #mobile-search-btn { display: flex !important; }
+    .header__search { display: none !important; }
+  }
+</style>

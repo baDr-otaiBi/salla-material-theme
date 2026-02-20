@@ -1,0 +1,166 @@
+{#
+  Reviews Component
+  Salla Material Theme
+#}
+
+<div id="reviews-section">
+
+  {# Reviews Summary #}
+  {% if product.rating %}
+    <div class="reviews-summary">
+
+      {# Overall Score #}
+      <div class="reviews-summary__score">
+        <div class="reviews-summary__number">{{ product.rating.stars | number_format(1) }}</div>
+        <div class="md-rating" aria-label="تقييم {{ product.rating.stars }} من 5">
+          {% for i in 1..5 %}
+            <svg class="md-rating__star {% if i > product.rating.stars %}md-rating__star--empty{% endif %}"
+              viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+          {% endfor %}
+        </div>
+        <div style="font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-on-surface-variant);">
+          من {{ product.rating.count }} تقييم
+        </div>
+      </div>
+
+      {# Rating Bars #}
+      <div class="reviews-summary__bars">
+        {% set star_counts = product.rating.breakdown ?? {5: 0, 4: 0, 3: 0, 2: 0, 1: 0} %}
+        {% for stars in [5, 4, 3, 2, 1] %}
+          <div class="reviews-summary__bar-item">
+            <span class="reviews-summary__bar-label">{{ stars }}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#f5a623" aria-hidden="true">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+            <div class="reviews-summary__bar-track">
+              {% set count = star_counts[stars] ?? 0 %}
+              {% set pct = product.rating.count > 0 ? (count / product.rating.count * 100) : 0 %}
+              <div class="reviews-summary__bar-fill" style="width:{{ pct }}%;" role="progressbar" aria-valuenow="{{ pct | round }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <span style="font-size:var(--md-sys-typescale-label-small-size);color:var(--md-sys-color-on-surface-variant);min-width:20px;text-align:center;">{{ count }}</span>
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  {% endif %}
+
+  {# Review List #}
+  {% if product.reviews %}
+    <div aria-label="التقييمات" role="list">
+      {% for review in product.reviews %}
+        <div class="review-card" role="listitem" itemscope itemtype="https://schema.org/Review">
+          <div class="review-card__header">
+
+            {# Avatar #}
+            <div class="review-card__avatar" aria-hidden="true">
+              {{ review.customer.name | first | upper }}
+            </div>
+
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span class="review-card__name" itemprop="author">{{ review.customer.name }}</span>
+                {% if review.verified_purchase %}
+                  <span class="review-card__verified" title="شراء مؤكد">
+                    <span class="material-symbols-rounded" style="font-size:12px" aria-hidden="true">verified</span>
+                    شراء مؤكد
+                  </span>
+                {% endif %}
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+                <div class="md-rating" aria-label="تقييم {{ review.rating }} من 5" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+                  <meta itemprop="ratingValue" content="{{ review.rating }}">
+                  <meta itemprop="bestRating" content="5">
+                  {% for i in 1..5 %}
+                    <svg class="md-rating__star {% if i > review.rating %}md-rating__star--empty{% endif %}"
+                      viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:16px;height:16px;">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                  {% endfor %}
+                </div>
+                <span class="review-card__date" itemprop="datePublished">
+                  {{ review.created_at | date('d/m/Y') }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {% if review.title %}
+            <div style="font-weight:700;margin-bottom:8px;color:var(--md-sys-color-on-surface);">{{ review.title }}</div>
+          {% endif %}
+
+          <div class="review-card__text" itemprop="reviewBody">{{ review.content }}</div>
+
+          {% if review.images %}
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+              {% for img in review.images %}
+                <img src="{{ img.url }}" alt="صورة من التقييم" loading="lazy"
+                  style="width:80px;height:80px;object-fit:cover;border-radius:var(--md-sys-shape-corner-medium);cursor:pointer;">
+              {% endfor %}
+            </div>
+          {% endif %}
+
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state" style="padding:var(--md-sys-spacing-xl) 0;">
+      <div class="empty-state__icon">
+        <span class="material-symbols-rounded" aria-hidden="true">rate_review</span>
+      </div>
+      <p class="empty-state__title" style="font-size:1.1rem;">لا توجد تقييمات بعد</p>
+      <p class="empty-state__desc">كن أول من يقيّم هذا المنتج</p>
+    </div>
+  {% endif %}
+
+  {# Write a Review #}
+  {% if customer %}
+    <div style="margin-top:var(--md-sys-spacing-xl);padding:var(--md-sys-spacing-xl);background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);">
+      <h3 class="md-title-large" style="margin-bottom:var(--md-sys-spacing-lg);">أضف تقييمك</h3>
+
+      <form method="POST" action="{{ product.url }}/reviews" style="display:flex;flex-direction:column;gap:var(--md-sys-spacing-md);">
+        {{ csrf_field() }}
+
+        {# Star Rating Input #}
+        <div>
+          <div class="product-options__label" style="margin-bottom:12px;">التقييم</div>
+          <div data-rating-input style="display:flex;gap:4px;direction:ltr;">
+            {% for i in 1..5 %}
+              <span class="md-rating__star md-rating--interactive"
+                style="width:32px;height:32px;cursor:pointer;color:var(--md-sys-color-outline);font-size:28px;">★</span>
+            {% endfor %}
+            <input type="hidden" name="rating" value="">
+          </div>
+        </div>
+
+        <div class="md-field">
+          <label class="md-field__label" for="review-title">عنوان التقييم</label>
+          <input class="md-field__input" type="text" id="review-title" name="title" placeholder="ملخص تجربتك...">
+        </div>
+
+        <div class="md-field">
+          <label class="md-field__label" for="review-content">التقييم</label>
+          <textarea class="md-field__textarea" id="review-content" name="content" rows="4" placeholder="شاركنا تجربتك مع هذا المنتج..." required></textarea>
+        </div>
+
+        <div>
+          <button type="submit" class="md-btn md-btn--filled">
+            <span class="material-symbols-rounded" aria-hidden="true">send</span>
+            إرسال التقييم
+          </button>
+        </div>
+
+      </form>
+    </div>
+  {% else %}
+    <div style="text-align:center;padding:var(--md-sys-spacing-xl);background:var(--md-sys-color-surface-container-low);border-radius:var(--md-sys-shape-corner-extra-large);">
+      <p style="color:var(--md-sys-color-on-surface-variant);margin-bottom:16px;">
+        سجّل دخولك لإضافة تقييم
+      </p>
+      <a href="{{ store.url }}/login" class="md-btn md-btn--filled">تسجيل الدخول</a>
+    </div>
+  {% endif %}
+
+</div>

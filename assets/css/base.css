@@ -1,0 +1,301 @@
+/*
+ * Base Styles - الأنماط الأساسية
+ * Material You - Salla Theme
+ */
+
+/* ===================================================
+   RESET & BASE
+   =================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  direction: rtl;
+  font-family: var(--md-sys-typescale-plain-family);
+  font-size: var(--md-sys-typescale-body-large-size);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+  transition:
+    background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===================================================
+   TYPOGRAPHY CLASSES
+   =================================================== */
+.md-display-large {
+  font-family: var(--md-sys-typescale-display-large-family);
+  font-size: var(--md-sys-typescale-display-large-size);
+  font-weight: var(--md-sys-typescale-display-large-weight);
+  line-height: var(--md-sys-typescale-display-large-line-height);
+  letter-spacing: var(--md-sys-typescale-display-large-tracking);
+}
+.md-display-medium {
+  font-family: var(--md-sys-typescale-display-medium-family);
+  font-size: var(--md-sys-typescale-display-medium-size);
+  font-weight: var(--md-sys-typescale-display-medium-weight);
+  line-height: var(--md-sys-typescale-display-medium-line-height);
+}
+.md-display-small {
+  font-family: var(--md-sys-typescale-display-small-family);
+  font-size: var(--md-sys-typescale-display-small-size);
+  font-weight: var(--md-sys-typescale-display-small-weight);
+  line-height: var(--md-sys-typescale-display-small-line-height);
+}
+.md-headline-large {
+  font-family: var(--md-sys-typescale-headline-large-family);
+  font-size: var(--md-sys-typescale-headline-large-size);
+  font-weight: var(--md-sys-typescale-headline-large-weight);
+  line-height: var(--md-sys-typescale-headline-large-line-height);
+}
+.md-headline-medium {
+  font-family: var(--md-sys-typescale-headline-medium-family);
+  font-size: var(--md-sys-typescale-headline-medium-size);
+  font-weight: var(--md-sys-typescale-headline-medium-weight);
+  line-height: var(--md-sys-typescale-headline-medium-line-height);
+}
+.md-headline-small {
+  font-family: var(--md-sys-typescale-headline-small-family);
+  font-size: var(--md-sys-typescale-headline-small-size);
+  font-weight: var(--md-sys-typescale-headline-small-weight);
+  line-height: var(--md-sys-typescale-headline-small-line-height);
+}
+.md-title-large {
+  font-family: var(--md-sys-typescale-title-large-family);
+  font-size: var(--md-sys-typescale-title-large-size);
+  font-weight: var(--md-sys-typescale-title-large-weight);
+  line-height: var(--md-sys-typescale-title-large-line-height);
+}
+.md-title-medium {
+  font-family: var(--md-sys-typescale-title-medium-family);
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  line-height: var(--md-sys-typescale-title-medium-line-height);
+}
+.md-title-small {
+  font-family: var(--md-sys-typescale-title-small-family);
+  font-size: var(--md-sys-typescale-title-small-size);
+  font-weight: var(--md-sys-typescale-title-small-weight);
+  line-height: var(--md-sys-typescale-title-small-line-height);
+}
+.md-body-large {
+  font-family: var(--md-sys-typescale-body-large-family);
+  font-size: var(--md-sys-typescale-body-large-size);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+}
+.md-body-medium {
+  font-family: var(--md-sys-typescale-body-medium-family);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: var(--md-sys-typescale-body-medium-weight);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+}
+.md-body-small {
+  font-family: var(--md-sys-typescale-body-small-family);
+  font-size: var(--md-sys-typescale-body-small-size);
+  font-weight: var(--md-sys-typescale-body-small-weight);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+}
+.md-label-large {
+  font-family: var(--md-sys-typescale-label-large-family);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+}
+.md-label-medium {
+  font-family: var(--md-sys-typescale-label-medium-family);
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: var(--md-sys-typescale-label-medium-weight);
+  line-height: var(--md-sys-typescale-label-medium-line-height);
+}
+.md-label-small {
+  font-family: var(--md-sys-typescale-label-small-family);
+  font-size: var(--md-sys-typescale-label-small-size);
+  font-weight: var(--md-sys-typescale-label-small-weight);
+  line-height: var(--md-sys-typescale-label-small-line-height);
+}
+
+/* ===================================================
+   LINKS
+   =================================================== */
+a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+  transition: opacity var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+a:hover { opacity: 0.8; }
+a:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+}
+
+/* ===================================================
+   IMAGES
+   =================================================== */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ===================================================
+   LISTS
+   =================================================== */
+ul, ol { list-style: none; }
+
+/* ===================================================
+   CONTAINER
+   =================================================== */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--md-sys-spacing-md);
+}
+
+@media (min-width: 600px) {
+  .container { padding: 0 var(--md-sys-spacing-lg); }
+}
+@media (min-width: 1024px) {
+  .container { padding: 0 var(--md-sys-spacing-xl); }
+}
+
+/* ===================================================
+   SECTION SPACING
+   =================================================== */
+.section {
+  padding: var(--md-sys-spacing-3xl) 0;
+}
+.section--sm {
+  padding: var(--md-sys-spacing-2xl) 0;
+}
+
+/* ===================================================
+   GRID SYSTEM
+   =================================================== */
+.md-grid {
+  display: grid;
+  gap: var(--md-sys-spacing-md);
+}
+
+.md-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.md-grid--3 { grid-template-columns: repeat(3, 1fr); }
+.md-grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 900px) {
+  .md-grid--4 { grid-template-columns: repeat(2, 1fr); }
+  .md-grid--3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .md-grid--4,
+  .md-grid--3,
+  .md-grid--2 { grid-template-columns: 1fr; }
+}
+
+/* ===================================================
+   FLEX UTILITIES
+   =================================================== */
+.md-flex   { display: flex; }
+.md-flex-center { display: flex; align-items: center; justify-content: center; }
+.md-flex-between { display: flex; align-items: center; justify-content: space-between; }
+.md-flex-gap-sm  { gap: var(--md-sys-spacing-sm); }
+.md-flex-gap-md  { gap: var(--md-sys-spacing-md); }
+
+/* ===================================================
+   SECTION HEADER
+   =================================================== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--md-sys-spacing-xl);
+  gap: var(--md-sys-spacing-md);
+}
+.section-header__title {
+  font-family: var(--md-sys-typescale-headline-medium-family);
+  font-size: var(--md-sys-typescale-headline-medium-size);
+  font-weight: 600;
+  line-height: var(--md-sys-typescale-headline-medium-line-height);
+  color: var(--md-sys-color-on-surface);
+}
+.section-header__subtitle {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-top: 4px;
+}
+
+/* ===================================================
+   SCROLLBAR STYLING
+   =================================================== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--md-sys-color-surface-container); }
+::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-full);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--md-sys-color-outline); }
+
+/* ===================================================
+   SELECTION COLOR
+   =================================================== */
+::selection {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+/* ===================================================
+   FOCUS VISIBLE
+   =================================================== */
+:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* ===================================================
+   VISUALLY HIDDEN (accessibility)
+   =================================================== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ===================================================
+   ANNOUNCEMENT BAR
+   =================================================== */
+.announcement-bar {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  text-align: center;
+  padding: 10px var(--md-sys-spacing-md);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  position: relative;
+  z-index: 100;
+}
+.announcement-bar a {
+  color: var(--md-sys-color-on-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
