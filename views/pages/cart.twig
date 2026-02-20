@@ -1,0 +1,229 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}سلة التسوق - {{ store.name }}{% endblock %}
+{% block body_class %}page-cart{% endblock %}
+
+{% block content %}
+  <div class="container">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">سلة التسوق</span>
+      </div>
+    </nav>
+
+    {# Page title #}
+    <div style="margin-bottom:var(--md-sys-spacing-xl);">
+      <h1 class="md-headline-large" style="color:var(--md-sys-color-on-surface);">
+        سلة التسوق
+        {% if cart.count %}
+          <span style="font-size:1rem;font-weight:400;color:var(--md-sys-color-on-surface-variant);">({{ cart.count }} منتج)</span>
+        {% endif %}
+      </h1>
+    </div>
+
+    {% if cart.items %}
+      <div class="cart-layout">
+
+        {# Cart Items #}
+        <div class="cart-items" role="list" aria-label="منتجات السلة">
+
+          {% for item in cart.items %}
+            <article class="cart-item" role="listitem">
+
+              {# Product Image #}
+              <a href="{{ item.product.url }}">
+                <img
+                  class="cart-item__image"
+                  src="{{ item.product.images[0].url ?? '/assets/images/placeholder.png' }}"
+                  alt="{{ item.product.name }}"
+                  loading="lazy"
+                  width="100"
+                  height="100"
+                >
+              </a>
+
+              {# Product Info #}
+              <div class="cart-item__info">
+                <a href="{{ item.product.url }}" style="text-decoration:none;">
+                  <h2 class="cart-item__name">{{ item.product.name }}</h2>
+                </a>
+
+                {% if item.options %}
+                  <div class="cart-item__options">
+                    {% for option in item.options %}
+                      {{ option.name }}: <strong>{{ option.value }}</strong>
+                      {% if not loop.last %} · {% endif %}
+                    {% endfor %}
+                  </div>
+                {% endif %}
+
+                <div class="cart-item__actions">
+                  <div class="quantity-selector"
+                    data-min="1"
+                    data-max="{{ item.product.quantity ?? 99 }}"
+                    data-unit-price="{{ item.product.price.amount }}"
+                    style="background:var(--md-sys-color-surface-container-highest);"
+                  >
+                    <button class="quantity-selector__btn" data-qty-minus aria-label="تقليل كمية {{ item.product.name }}">−</button>
+                    <span class="quantity-selector__value" aria-live="polite">{{ item.quantity }}</span>
+                    <button class="quantity-selector__btn" data-qty-plus aria-label="زيادة كمية {{ item.product.name }}">+</button>
+                    <input type="hidden" name="quantity" value="{{ item.quantity }}">
+                  </div>
+
+                  <button class="cart-item__remove" data-remove-item="{{ item.id }}" aria-label="حذف {{ item.product.name }} من السلة">
+                    <span class="material-symbols-rounded" style="font-size:16px" aria-hidden="true">delete</span>
+                    حذف
+                  </button>
+
+                  <a href="{{ item.product.url }}" class="md-btn md-btn--text md-btn--sm" style="color:var(--md-sys-color-primary);">
+                    <span class="material-symbols-rounded" style="font-size:16px" aria-hidden="true">open_in_new</span>
+                    عرض المنتج
+                  </a>
+                </div>
+              </div>
+
+              {# Price #}
+              <div class="cart-item__price-col">
+                <div class="cart-item__price" aria-label="السعر الإجمالي">
+                  {{ (item.product.price.amount * item.quantity) | number_format(2) }} {{ item.product.price.currency | default('ر.س') }}
+                </div>
+                {% if item.quantity > 1 %}
+                  <div style="font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-on-surface-variant);margin-top:4px;">
+                    {{ item.product.price.formatted }} × {{ item.quantity }}
+                  </div>
+                {% endif %}
+              </div>
+
+            </article>
+          {% endfor %}
+
+          {# Continue shopping #}
+          <div style="margin-top:var(--md-sys-spacing-md);">
+            <a href="{{ store.url }}/products" class="md-btn md-btn--text">
+              <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+              متابعة التسوق
+            </a>
+          </div>
+
+        </div>
+
+        {# Cart Summary #}
+        <div class="cart-summary">
+          <h2 class="cart-summary__title">ملخص الطلب</h2>
+
+          <div class="cart-summary__row">
+            <span class="cart-summary__label">المجموع الفرعي</span>
+            <span class="cart-summary__value" data-cart-subtotal>{{ cart.subtotal.formatted }}</span>
+          </div>
+
+          {% if cart.discount %}
+            <div class="cart-summary__row">
+              <span class="cart-summary__label" style="color:var(--md-sys-color-error);">الخصم</span>
+              <span class="cart-summary__value" style="color:var(--md-sys-color-error);">- {{ cart.discount.formatted }}</span>
+            </div>
+          {% endif %}
+
+          <div class="cart-summary__row">
+            <span class="cart-summary__label">الشحن</span>
+            <span class="cart-summary__value" data-shipping-cost="{{ cart.shipping.amount ?? 0 }}">
+              {% if cart.shipping.amount %}
+                {{ cart.shipping.formatted }}
+              {% else %}
+                <span style="color:var(--md-sys-color-tertiary);font-weight:600;">مجاني</span>
+              {% endif %}
+            </span>
+          </div>
+
+          {% if cart.tax %}
+            <div class="cart-summary__row">
+              <span class="cart-summary__label">ضريبة القيمة المضافة (15%)</span>
+              <span class="cart-summary__value">{{ cart.tax.formatted }}</span>
+            </div>
+          {% endif %}
+
+          <div class="cart-summary__total">
+            <span class="cart-summary__total-label">الإجمالي</span>
+            <span class="cart-summary__total-value" data-cart-total>{{ cart.total.formatted }}</span>
+          </div>
+
+          {# Coupon Code #}
+          <div class="cart-summary__coupon">
+            <form data-coupon-form style="display:flex;gap:8px;margin:var(--md-sys-spacing-md) 0;">
+              <div class="md-field" style="flex:1;">
+                <input class="md-field__input" type="text" name="coupon" placeholder="كود الخصم" aria-label="أدخل كود الخصم">
+              </div>
+              <button type="submit" class="md-btn md-btn--tonal" style="flex-shrink:0;">تطبيق</button>
+            </form>
+          </div>
+
+          {# Checkout button #}
+          <a href="{{ store.url }}/checkout" class="md-btn md-btn--filled md-btn--full md-btn--lg" style="margin-bottom:var(--md-sys-spacing-sm);">
+            <span class="material-symbols-rounded" aria-hidden="true">lock</span>
+            إتمام الطلب
+          </a>
+
+          {# Payment methods #}
+          {% if settings.show_payment_icons %}
+            <div style="text-align:center;margin-top:var(--md-sys-spacing-sm);">
+              <div style="font-size:var(--md-sys-typescale-label-small-size);color:var(--md-sys-color-on-surface-variant);margin-bottom:8px;">
+                <span class="material-symbols-rounded" style="font-size:14px;vertical-align:middle" aria-hidden="true">lock</span>
+                دفع آمن ومشفر
+              </div>
+              <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">
+                {# Payment icons abbreviated #}
+                <span style="padding:4px 10px;border:1px solid var(--md-sys-color-outline-variant);border-radius:6px;font-size:11px;font-weight:bold;color:#1a7abf;">mada</span>
+                <span style="padding:4px 10px;border:1px solid var(--md-sys-color-outline-variant);border-radius:6px;font-size:11px;font-weight:bold;color:#1a1f71;">VISA</span>
+                <span style="padding:4px 10px;border:1px solid var(--md-sys-color-outline-variant);border-radius:6px;font-size:11px;font-weight:bold;background:#000;color:#fff;">Pay</span>
+                <span style="padding:4px 10px;border:1px solid var(--md-sys-color-outline-variant);border-radius:6px;font-size:11px;font-weight:bold;color:#7b2d8b;">STC</span>
+              </div>
+            </div>
+          {% endif %}
+
+          {# Security badges #}
+          <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:var(--md-sys-spacing-md);flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--md-sys-color-on-surface-variant);">
+              <span class="material-symbols-rounded" style="font-size:16px;color:var(--md-sys-color-tertiary)" aria-hidden="true">verified_user</span>
+              دفع آمن
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--md-sys-color-on-surface-variant);">
+              <span class="material-symbols-rounded" style="font-size:16px;color:var(--md-sys-color-tertiary)" aria-hidden="true">replay</span>
+              إرجاع سهل
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--md-sys-color-on-surface-variant);">
+              <span class="material-symbols-rounded" style="font-size:16px;color:var(--md-sys-color-tertiary)" aria-hidden="true">local_shipping</span>
+              شحن سريع
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    {% else %}
+      {# Empty Cart #}
+      <div class="empty-state" style="padding:var(--md-sys-spacing-3xl) 0;">
+        <div class="empty-state__icon">
+          <span class="material-symbols-rounded" style="font-size:80px;color:var(--md-sys-color-primary);opacity:0.5;" aria-hidden="true">shopping_bag</span>
+        </div>
+        <h2 class="empty-state__title">سلتك فارغة</h2>
+        <p class="empty-state__desc">
+          لم تضف أي منتجات بعد. تصفح متجرنا واكتشف منتجاتنا الرائعة!
+        </p>
+        <a href="{{ store.url }}/products" class="md-btn md-btn--filled md-btn--lg">
+          <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+          تسوق الآن
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ 'assets/js/cart.js' | asset_url }}" defer></script>
+{% endblock %}

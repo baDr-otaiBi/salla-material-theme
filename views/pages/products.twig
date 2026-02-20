@@ -1,0 +1,266 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ category.name ?? 'جميع المنتجات' }} - {{ store.name }}{% endblock %}
+{% block description %}{{ category.description ?? 'تصفح منتجاتنا المتنوعة' | striptags | truncate(160) }}{% endblock %}
+
+{% block body_class %}page-products{% endblock %}
+
+{% block content %}
+  <div class="container" style="padding-top:var(--md-sys-spacing-lg);">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      {% if category.parent %}
+        <div class="md-breadcrumb__item">
+          <a href="{{ category.parent.url }}" class="md-breadcrumb__link">{{ category.parent.name }}</a>
+          <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+        </div>
+      {% endif %}
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">
+          {{ category.name ?? 'جميع المنتجات' }}
+        </span>
+      </div>
+    </nav>
+
+    {# Category Header #}
+    {% if category %}
+      <div style="margin-bottom:var(--md-sys-spacing-xl);">
+        <h1 class="md-headline-large" style="color:var(--md-sys-color-on-surface);margin-bottom:8px;">
+          {{ category.name }}
+        </h1>
+        {% if category.description %}
+          <p style="color:var(--md-sys-color-on-surface-variant);font-size:var(--md-sys-typescale-body-medium-size);max-width:600px;">
+            {{ category.description | striptags | truncate(200) }}
+          </p>
+        {% endif %}
+      </div>
+
+      {# Sub-categories chips #}
+      {% if category.children %}
+        <div class="md-chips" style="margin-bottom:var(--md-sys-spacing-lg);" role="list" aria-label="الفئات الفرعية">
+          <a href="{{ category.url }}" class="md-chip md-chip--filter selected" role="listitem">
+            الكل
+          </a>
+          {% for child in category.children %}
+            <a href="{{ child.url }}" class="md-chip md-chip--filter" role="listitem">
+              {{ child.name }}
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% else %}
+      <h1 class="md-headline-large" style="color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-xl);">
+        جميع المنتجات
+      </h1>
+    {% endif %}
+
+    {# Mobile filter button #}
+    <button class="md-btn md-btn--outlined filter-mobile-btn" data-filter-toggle aria-expanded="false" aria-controls="products-sidebar">
+      <span class="material-symbols-rounded" aria-hidden="true">filter_list</span>
+      تصفية المنتجات
+    </button>
+
+    {# Layout: Sidebar + Products #}
+    <div class="layout-with-sidebar">
+
+      {# Sidebar Filters #}
+      <aside id="products-sidebar" class="sidebar" aria-label="خيارات التصفية">
+
+        {# Price Range #}
+        <div class="sidebar__section">
+          <button class="sidebar__title" aria-expanded="true">
+            السعر
+            <span class="material-symbols-rounded" aria-hidden="true">expand_less</span>
+          </button>
+          <div class="price-range">
+            <div class="price-range__inputs">
+              <input type="number" class="price-range__input" placeholder="من" value="{{ request.query.min_price }}" min="0" aria-label="السعر الأدنى">
+              <span class="price-range__separator">—</span>
+              <input type="number" class="price-range__input" placeholder="إلى" value="{{ request.query.max_price }}" min="0" aria-label="السعر الأعلى">
+            </div>
+            <button class="md-btn md-btn--tonal md-btn--sm md-btn--full" style="margin-top:8px;">تطبيق</button>
+          </div>
+        </div>
+
+        {# Categories #}
+        {% if store.categories %}
+          <div class="sidebar__section">
+            <button class="sidebar__title" aria-expanded="true">
+              الفئات
+              <span class="material-symbols-rounded" aria-hidden="true">expand_less</span>
+            </button>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:4px;" role="list">
+              {% for cat in store.categories | slice(0, 8) %}
+                <li>
+                  <a href="{{ cat.url }}"
+                    class="md-list-item {% if current_category.id == cat.id %}active{% endif %}"
+                    style="padding:10px 12px;font-size:var(--md-sys-typescale-body-medium-size);"
+                  >
+                    {{ cat.name }}
+                    {% if cat.products_count %}
+                      <span class="md-list-item__trailing">{{ cat.products_count }}</span>
+                    {% endif %}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        {# Rating Filter #}
+        <div class="sidebar__section">
+          <button class="sidebar__title" aria-expanded="true">
+            التقييم
+            <span class="material-symbols-rounded" aria-hidden="true">expand_less</span>
+          </button>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            {% for stars in [5, 4, 3, 2, 1] %}
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;">
+                <input type="radio" name="rating" value="{{ stars }}" style="accent-color:var(--md-sys-color-primary);">
+                <div class="md-rating" aria-label="{{ stars }} نجوم">
+                  {% for i in 1..5 %}
+                    <svg class="md-rating__star {% if i > stars %}md-rating__star--empty{% endif %}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:16px;height:16px;">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                  {% endfor %}
+                </div>
+                <span style="font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-on-surface-variant);">وأعلى</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        {# Availability #}
+        <div class="sidebar__section">
+          <button class="sidebar__title" aria-expanded="true">
+            التوفر
+            <span class="material-symbols-rounded" aria-hidden="true">expand_less</span>
+          </button>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;">
+            <input type="checkbox" name="in_stock" style="accent-color:var(--md-sys-color-primary);width:18px;height:18px;">
+            <span style="font-size:var(--md-sys-typescale-body-medium-size);">متوفر فقط</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;">
+            <input type="checkbox" name="on_sale" style="accent-color:var(--md-sys-color-primary);width:18px;height:18px;">
+            <span style="font-size:var(--md-sys-typescale-body-medium-size);">في تخفيض</span>
+          </label>
+        </div>
+
+        {# Clear filters #}
+        <a href="{{ request.path }}" class="md-btn md-btn--text md-btn--full" style="margin-top:8px;">
+          <span class="material-symbols-rounded" aria-hidden="true">close</span>
+          مسح كل الفلاتر
+        </a>
+
+      </aside>
+
+      {# Products Section #}
+      <div>
+
+        {# Toolbar #}
+        <div class="products-toolbar">
+          <span class="products-toolbar__count" aria-live="polite">
+            {% if products.total %}
+              {{ products.total }} منتج
+            {% endif %}
+          </span>
+
+          <div class="products-toolbar__actions">
+            {# View Toggle #}
+            <div class="view-toggle" role="group" aria-label="طريقة العرض">
+              <button class="view-toggle__btn active" data-view="grid" aria-label="عرض شبكي" aria-pressed="true">
+                <span class="material-symbols-rounded" aria-hidden="true">grid_view</span>
+              </button>
+              <button class="view-toggle__btn" data-view="list" aria-label="عرض قائمة" aria-pressed="false">
+                <span class="material-symbols-rounded" aria-hidden="true">view_list</span>
+              </button>
+            </div>
+
+            {# Sort #}
+            <label class="sr-only" for="sort-select">ترتيب حسب</label>
+            <select class="products-toolbar__sort" id="sort-select"
+              onchange="window.location.href='{{ request.path }}?sort='+this.value+'{{ request.query | merge({sort: ''}) | url_encode }}'">
+              <option value="newest"    {% if request.query.sort == 'newest' %}selected{% endif %}>الأحدث</option>
+              <option value="sales"     {% if request.query.sort == 'sales' %}selected{% endif %}>الأكثر مبيعاً</option>
+              <option value="price_asc" {% if request.query.sort == 'price_asc' %}selected{% endif %}>السعر: من الأقل</option>
+              <option value="price_desc"{% if request.query.sort == 'price_desc' %}selected{% endif %}>السعر: من الأعلى</option>
+              <option value="rating"    {% if request.query.sort == 'rating' %}selected{% endif %}>الأعلى تقييماً</option>
+            </select>
+          </div>
+        </div>
+
+        {# Active filters chips #}
+        {% if request.query.min_price or request.query.max_price or request.query.rating or request.query.in_stock or request.query.on_sale %}
+          <div class="md-chips" style="margin-bottom:var(--md-sys-spacing-md);" aria-label="الفلاتر المفعلة">
+            {% if request.query.min_price or request.query.max_price %}
+              <span class="md-chip md-chip--input">
+                السعر: {{ request.query.min_price ?? '0' }} - {{ request.query.max_price ?? '∞' }} ر.س
+                <a href="{{ request.path }}" style="margin-inline-start:4px;color:inherit;" aria-label="إزالة فلتر السعر">✕</a>
+              </span>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {# Products Grid #}
+        {% if products.data %}
+          <div class="products-grid" id="products-grid" role="list">
+            {% for product in products.data %}
+              {% include 'views/components/product-card.twig' with {
+                product: product,
+                animate: true,
+                index: loop.index
+              } %}
+            {% endfor %}
+          </div>
+
+          {# Pagination #}
+          {% if products.last_page > 1 %}
+            <nav class="md-pagination" aria-label="التصفح بين الصفحات" style="display:flex;justify-content:center;gap:8px;margin-top:var(--md-sys-spacing-2xl);flex-wrap:wrap;">
+              {% if products.current_page > 1 %}
+                <a href="{{ request.path }}?page={{ products.current_page - 1 }}" class="md-btn md-btn--outlined" aria-label="الصفحة السابقة">
+                  <span class="material-symbols-rounded" aria-hidden="true">chevron_right</span>
+                  السابق
+                </a>
+              {% endif %}
+
+              {% for page in 1..products.last_page %}
+                {% if page == products.current_page %}
+                  <span class="md-btn md-btn--filled" aria-current="page" style="min-width:40px;">{{ page }}</span>
+                {% elseif page == 1 or page == products.last_page or (page >= products.current_page - 2 and page <= products.current_page + 2) %}
+                  <a href="{{ request.path }}?page={{ page }}" class="md-btn md-btn--outlined" style="min-width:40px;" aria-label="الصفحة {{ page }}">{{ page }}</a>
+                {% elseif page == products.current_page - 3 or page == products.current_page + 3 %}
+                  <span style="align-self:center;color:var(--md-sys-color-on-surface-variant);">...</span>
+                {% endif %}
+              {% endfor %}
+
+              {% if products.current_page < products.last_page %}
+                <a href="{{ request.path }}?page={{ products.current_page + 1 }}" class="md-btn md-btn--outlined" aria-label="الصفحة التالية">
+                  التالي
+                  <span class="material-symbols-rounded" aria-hidden="true">chevron_left</span>
+                </a>
+              {% endif %}
+            </nav>
+          {% endif %}
+
+        {% else %}
+          {# Empty state #}
+          <div class="empty-state">
+            <div class="empty-state__icon">
+              <span class="material-symbols-rounded" aria-hidden="true">search_off</span>
+            </div>
+            <h2 class="empty-state__title">لا توجد منتجات</h2>
+            <p class="empty-state__desc">لم نتمكن من العثور على منتجات تطابق معاييرك. حاول تغيير الفلاتر.</p>
+            <a href="{{ request.path }}" class="md-btn md-btn--filled">مسح الفلاتر</a>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

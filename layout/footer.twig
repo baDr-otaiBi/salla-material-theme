@@ -1,0 +1,200 @@
+{#
+  Footer Component - Material You Style
+  Salla Material Theme
+#}
+
+<footer class="site-footer" role="contentinfo">
+
+  {# Newsletter Section #}
+  {% if settings.show_newsletter %}
+    <section class="footer__newsletter" aria-labelledby="newsletter-title">
+      <div class="container">
+        <h2 id="newsletter-title" class="footer__newsletter-title">
+          {{ settings.newsletter_title | default('اشترك في نشرتنا') }}
+        </h2>
+        <p class="footer__newsletter-text">
+          {{ settings.newsletter_text | default('احصل على آخر العروض والمنتجات الجديدة مباشرة في بريدك') }}
+        </p>
+        <form class="footer__newsletter-form" data-newsletter-form>
+          <input
+            type="email"
+            name="email"
+            class="footer__newsletter-input"
+            placeholder="بريدك الإلكتروني"
+            required
+            aria-label="البريد الإلكتروني للاشتراك في النشرة"
+            autocomplete="email"
+          >
+          <button type="submit" class="md-btn md-btn--filled">
+            اشترك الآن
+          </button>
+        </form>
+      </div>
+    </section>
+  {% endif %}
+
+  {# Footer Main #}
+  <div class="footer__main">
+    <div class="container">
+      <div class="footer__grid">
+
+        {# Column 1: About #}
+        <div class="footer__col">
+          <a href="{{ store.url }}" class="header__logo" style="margin-bottom:16px;display:inline-flex">
+            {% if settings.store_logo %}
+              <img src="{{ settings.store_logo }}" alt="{{ store.name }}" height="40" loading="lazy">
+            {% else %}
+              <span style="font-size:1.25rem;font-weight:800;color:var(--md-sys-color-primary);">{{ store.name }}</span>
+            {% endif %}
+          </a>
+          {% if store.description %}
+            <p class="footer__col-desc">{{ store.description | truncate(150) }}</p>
+          {% endif %}
+
+          {# Social Links #}
+          {% if settings.show_social_links %}
+            <div class="footer__social" aria-label="التواصل الاجتماعي">
+              {% if store.social.twitter %}
+                <a href="{{ store.social.twitter }}" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="تويتر">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.631 5.905-5.631zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+              {% endif %}
+              {% if store.social.instagram %}
+                <a href="{{ store.social.instagram }}" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="إنستغرام">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+              {% endif %}
+              {% if store.social.snapchat %}
+                <a href="{{ store.social.snapchat }}" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="سناب شات">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.316 13.95c-.044.198-.187.34-.388.385-.473.106-.884.374-1.175.768l-.015.021c-.124.17-.237.254-.353.254-.072 0-.144-.024-.215-.072a4.81 4.81 0 00-2.17-.6 4.813 4.813 0 00-2.17.6c-.071.048-.143.072-.215.072-.116 0-.229-.083-.353-.254l-.015-.021c-.291-.394-.702-.662-1.175-.768-.201-.045-.344-.187-.388-.385-.071-.317.197-.476.382-.52a2.28 2.28 0 001.536-1.35c.001-.002.001-.005.002-.007.044-.124.031-.232-.04-.317-.163-.195-.492-.3-.903-.44l-.001-.001-.001-.001c-.139-.047-.214-.091-.214-.2 0-.148.159-.217.251-.217.029 0 .058.006.087.017.296.111.63.257.955.321.003 0 .005.001.008.001.135 0 .179-.065.185-.134.04-.464.078-.936.181-1.4.241-1.073 1.024-1.857 1.892-1.857.868 0 1.651.784 1.893 1.857.103.464.14.936.18 1.4.007.069.051.134.186.134.003 0 .005-.001.008-.001.325-.064.659-.21.955-.321.029-.011.058-.017.087-.017.092 0 .251.069.251.217 0 .109-.075.153-.214.2l-.001.001-.001.001c-.411.14-.74.245-.903.44-.071.085-.084.193-.04.317.001.002.001.005.002.007a2.28 2.28 0 001.536 1.35c.185.044.453.203.382.52z"/></svg>
+                </a>
+              {% endif %}
+              {% if store.social.tiktok %}
+                <a href="{{ store.social.tiktok }}" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="تيك توك">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.73a8.18 8.18 0 004.84 1.56V6.84a4.85 4.85 0 01-1.07-.15z"/></svg>
+                </a>
+              {% endif %}
+              {% if store.social.whatsapp %}
+                <a href="https://wa.me/{{ store.social.whatsapp }}" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="واتساب">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Column 2: Links #}
+        <div class="footer__col">
+          <h3 class="footer__col-title">المتجر</h3>
+          <ul class="footer__links" role="list">
+            <li><a href="{{ store.url }}/products">جميع المنتجات</a></li>
+            {% for category in store.categories | slice(0, 5) %}
+              <li><a href="{{ category.url }}">{{ category.name }}</a></li>
+            {% endfor %}
+            {% if store.pages.brands %}
+              <li><a href="{{ store.url }}/brands">الماركات</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        {# Column 3: Customer Service #}
+        <div class="footer__col">
+          <h3 class="footer__col-title">خدمة العملاء</h3>
+          <ul class="footer__links" role="list">
+            {% for page in store.pages | slice(0, 5) %}
+              <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+            {% endfor %}
+            <li><a href="{{ store.url }}/contact">تواصل معنا</a></li>
+            <li><a href="{{ store.url }}/account/orders">تتبع طلبك</a></li>
+          </ul>
+        </div>
+
+        {# Column 4: Account #}
+        <div class="footer__col">
+          <h3 class="footer__col-title">حسابك</h3>
+          <ul class="footer__links" role="list">
+            {% if customer %}
+              <li><a href="{{ store.url }}/account">ملف شخصي</a></li>
+              <li><a href="{{ store.url }}/account/orders">طلباتي</a></li>
+              <li><a href="{{ store.url }}/wishlist">المفضلة</a></li>
+              <li><a href="{{ store.url }}/logout">تسجيل الخروج</a></li>
+            {% else %}
+              <li><a href="{{ store.url }}/login">تسجيل الدخول</a></li>
+              <li><a href="{{ store.url }}/register">إنشاء حساب</a></li>
+              <li><a href="{{ store.url }}/wishlist">المفضلة</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {# Footer Bottom Bar #}
+  <div class="footer__bottom">
+    <div class="container">
+      <div class="footer__bottom-inner">
+        <p class="footer__copyright">
+          &copy; {{ "now"|date("Y") }} {{ store.name }}. {{ settings.footer_copyright | default('جميع الحقوق محفوظة') }}
+        </p>
+
+        {# Payment Icons #}
+        {% if settings.show_payment_icons %}
+          <div class="footer__payment-icons" aria-label="طرق الدفع المقبولة">
+            {# Mada #}
+            <svg class="footer__payment-icon" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="مدى">
+              <rect width="48" height="32" rx="4" fill="#fff" stroke="#e0e3e5"/>
+              <text x="24" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#1a7abf" font-family="Arial">mada</text>
+            </svg>
+            {# Visa #}
+            <svg class="footer__payment-icon" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="فيزا">
+              <rect width="48" height="32" rx="4" fill="#fff" stroke="#e0e3e5"/>
+              <text x="24" y="21" text-anchor="middle" font-size="14" font-weight="bold" fill="#1a1f71" font-family="Arial">VISA</text>
+            </svg>
+            {# Mastercard #}
+            <svg class="footer__payment-icon" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="ماستركارد">
+              <rect width="48" height="32" rx="4" fill="#fff" stroke="#e0e3e5"/>
+              <circle cx="19" cy="16" r="7" fill="#eb001b"/>
+              <circle cx="29" cy="16" r="7" fill="#f79e1b"/>
+              <path d="M24 10.5a7 7 0 010 11 7 7 0 010-11z" fill="#ff5f00"/>
+            </svg>
+            {# Apple Pay #}
+            <svg class="footer__payment-icon" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="آبل باي">
+              <rect width="48" height="32" rx="4" fill="#000"/>
+              <text x="24" y="21" text-anchor="middle" font-size="10" fill="#fff" font-family="-apple-system,Arial">Apple Pay</text>
+            </svg>
+            {# STC Pay #}
+            <svg class="footer__payment-icon" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="STC باي">
+              <rect width="48" height="32" rx="4" fill="#fff" stroke="#e0e3e5"/>
+              <text x="24" y="21" text-anchor="middle" font-size="10" font-weight="bold" fill="#7b2d8b" font-family="Arial">STC Pay</text>
+            </svg>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+{# Newsletter form handler #}
+<script>
+document.querySelector('[data-newsletter-form]')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const input = this.querySelector('input[name="email"]');
+  const btn   = this.querySelector('button[type="submit"]');
+  if (!input.value) return;
+
+  btn.disabled = true;
+  btn.textContent = 'جارٍ الاشتراك...';
+
+  await new Promise(r => setTimeout(r, 1000));
+  btn.disabled = false;
+  btn.textContent = 'اشترك الآن';
+
+  if (window.Snackbar) {
+    Snackbar.show('تم الاشتراك بنجاح! شكراً لك 🎉');
+  }
+  input.value = '';
+});
+</script>

@@ -1,0 +1,317 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ store.name }} - {{ settings.hero_title | default('تسوّق بأسلوب مختلف') }}{% endblock %}
+{% block description %}{{ store.description | default('متجر إلكتروني عصري بتصميم Material You') }}{% endblock %}
+
+{% block body_class %}page-home{% endblock %}
+
+{% block content %}
+
+  {# =============================================
+     HERO SECTION
+     ============================================= #}
+  {% if settings.hero_style == 'split' %}
+    {# Split hero: text + image side by side #}
+    <section class="section section--sm" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="hero hero--split">
+          <div class="hero__content">
+            <span class="hero__eyebrow">
+              <span class="material-symbols-rounded" style="font-size:16px">auto_awesome</span>
+              {{ store.name }}
+            </span>
+            <h1 id="hero-title" class="hero__title">
+              {{ settings.hero_title | default('تسوّق بأسلوب مختلف') }}
+            </h1>
+            <p class="hero__description">
+              {{ settings.hero_subtitle | default('اكتشف أحدث المنتجات بتصميم عصري وتجربة تسوق سلسة') }}
+            </p>
+            <div class="hero__actions">
+              <a href="{{ store.url }}/products" class="md-btn md-btn--filled md-btn--lg">
+                <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+                {{ settings.hero_cta_text | default('تسوق الآن') }}
+              </a>
+              <a href="{{ store.url }}/products" class="md-btn md-btn--outlined md-btn--lg">
+                استعرض المنتجات
+              </a>
+            </div>
+          </div>
+          <div class="hero__image-wrap">
+            {% if settings.hero_image %}
+              <img src="{{ settings.hero_image }}" alt="صورة المتجر" loading="eager">
+            {% else %}
+              <div style="height:400px;background:linear-gradient(135deg,var(--md-sys-color-primary-container),var(--md-sys-color-tertiary-container));border-radius:var(--md-sys-shape-corner-extra-large);display:flex;align-items:center;justify-content:center;font-size:6rem;">🛍️</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+  {% elseif settings.hero_style == 'cards' %}
+    {# Cards hero: multiple category cards #}
+    <section class="section section--sm" aria-labelledby="hero-title">
+      <div class="container">
+        <div style="text-align:center;margin-bottom:var(--md-sys-spacing-2xl);">
+          <h1 id="hero-title" class="hero__title" style="font-size:clamp(2rem,5vw,3rem);">
+            {{ settings.hero_title | default('تسوّق بأسلوب مختلف') }}
+          </h1>
+          <p class="hero__description" style="max-width:560px;margin:16px auto 0;">
+            {{ settings.hero_subtitle | default('اكتشف أحدث المنتجات') }}
+          </p>
+        </div>
+        <div class="categories-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));">
+          {% for category in store.categories | slice(0, 6) %}
+            <a href="{{ category.url }}" class="category-card" data-animate>
+              {% if category.image %}
+                <img class="category-card__image" src="{{ category.image }}" alt="{{ category.name }}" loading="lazy">
+              {% else %}
+                <div class="category-card__icon">🏷️</div>
+              {% endif %}
+              <span class="category-card__name">{{ category.name }}</span>
+              {% if category.products_count %}
+                <span class="category-card__count">{{ category.products_count }} منتج</span>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+  {% else %}
+    {# Default: Full-width hero banner #}
+    <section class="hero hero--full" aria-labelledby="hero-title"
+      {% if settings.hero_image %}
+      style="min-height:600px;"
+      {% endif %}
+    >
+      {% if settings.hero_image %}
+        <img
+          class="hero__image"
+          src="{{ settings.hero_image }}"
+          alt="{{ settings.hero_title | default(store.name) }}"
+          loading="eager"
+          fetchpriority="high"
+        >
+      {% else %}
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,var(--md-sys-color-primary) 0%,var(--md-sys-color-tertiary) 100%);"></div>
+      {% endif %}
+
+      <div class="container" style="position:relative;z-index:2;">
+        <div class="hero__content" style="{% if not settings.hero_image %}color:var(--md-sys-color-on-primary);{% endif %}">
+          <span class="hero__eyebrow">
+            <span class="material-symbols-rounded" style="font-size:16px">auto_awesome</span>
+            مجموعة {{ "now"|date("Y") }}
+          </span>
+          <h1 id="hero-title" class="hero__title">
+            {{ settings.hero_title | default('تسوّق بأسلوب مختلف') }}
+          </h1>
+          <p class="hero__description">
+            {{ settings.hero_subtitle | default('اكتشف أحدث المنتجات بتصميم عصري وتجربة تسوق سلسة') }}
+          </p>
+          <div class="hero__actions">
+            <a href="{{ store.url }}/products" class="md-btn md-btn--lg"
+              style="background:white;color:var(--md-sys-color-primary);border-radius:var(--md-sys-shape-corner-full);">
+              <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+              {{ settings.hero_cta_text | default('تسوق الآن') }}
+            </a>
+            <a href="{{ store.url }}/products" class="md-btn md-btn--lg"
+              style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.4);backdrop-filter:blur(10px);border-radius:var(--md-sys-shape-corner-full);">
+              اكتشف المزيد
+            </a>
+          </div>
+
+          {# Stats #}
+          <div class="hero__stats">
+            <div>
+              <div class="hero__stat-value">{{ store.products_count | default('500') }}+</div>
+              <div class="hero__stat-label">منتج</div>
+            </div>
+            <div style="width:1px;height:40px;background:rgba(255,255,255,0.3);"></div>
+            <div>
+              <div class="hero__stat-value">{{ store.orders_count | default('1K') }}+</div>
+              <div class="hero__stat-label">طلب مكتمل</div>
+            </div>
+            <div style="width:1px;height:40px;background:rgba(255,255,255,0.3);"></div>
+            <div>
+              <div class="hero__stat-value">4.9 ⭐</div>
+              <div class="hero__stat-label">تقييم العملاء</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# =============================================
+     FEATURED CATEGORIES
+     ============================================= #}
+  {% if settings.show_featured_categories and store.categories %}
+    <section class="section" aria-labelledby="categories-title">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2 id="categories-title" class="section-header__title">
+              {{ settings.featured_categories_title | default('تسوق حسب الفئة') }}
+            </h2>
+          </div>
+          <a href="{{ store.url }}/products" class="md-btn md-btn--text">
+            عرض الكل
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+          </a>
+        </div>
+
+        <div class="categories-grid">
+          {% for category in store.categories | slice(0, 8) %}
+            <a href="{{ category.url }}" class="category-card" data-animate data-delay="{{ loop.index * 60 }}">
+              {% if category.image %}
+                <img class="category-card__image" src="{{ category.image }}" alt="{{ category.name }}" loading="lazy" width="80" height="80">
+              {% else %}
+                <div class="category-card__icon">
+                  {{ ['🛍️','👕','📱','💄','🏠','⌚','👟','🎮'][loop.index0 % 8] }}
+                </div>
+              {% endif %}
+              <span class="category-card__name">{{ category.name }}</span>
+              {% if category.products_count %}
+                <span class="category-card__count">{{ category.products_count }} منتج</span>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# =============================================
+     FEATURED PRODUCTS
+     ============================================= #}
+  {% if settings.show_featured_products and featured_products %}
+    <section class="section" style="background-color:var(--md-sys-color-surface-container-lowest);" aria-labelledby="featured-title">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2 id="featured-title" class="section-header__title">
+              {{ settings.featured_products_title | default('منتجات مختارة لك') }}
+            </h2>
+            <p class="section-header__subtitle">أفضل المنتجات الأكثر مبيعاً</p>
+          </div>
+          <a href="{{ store.url }}/products?sort=sales" class="md-btn md-btn--text">
+            عرض الكل
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+          </a>
+        </div>
+
+        <div class="products-grid">
+          {% for product in featured_products | slice(0, 8) %}
+            {% include 'views/components/product-card.twig' with { product: product, animate: true, index: loop.index } %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# =============================================
+     PROMO BANNER
+     ============================================= #}
+  <section class="section section--sm">
+    <div class="container">
+      <div style="
+        background: linear-gradient(135deg, var(--md-sys-color-secondary-container) 0%, var(--md-sys-color-primary-container) 100%);
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        padding: var(--md-sys-spacing-3xl);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--md-sys-spacing-xl);
+        align-items: center;
+      ">
+        <div>
+          <div style="font-size:var(--md-sys-typescale-label-large-size);font-weight:600;color:var(--md-sys-color-primary);margin-bottom:8px;">
+            عرض محدود الوقت
+          </div>
+          <h2 style="font-size:clamp(1.5rem,3vw,2.25rem);font-weight:800;color:var(--md-sys-color-on-surface);margin-bottom:12px;line-height:1.2;">
+            خصم يصل إلى <span style="color:var(--md-sys-color-error);">50%</span><br>على المنتجات المختارة
+          </h2>
+          <p style="color:var(--md-sys-color-on-surface-variant);margin-bottom:24px;">
+            لا تفوّت فرصة الحصول على أفضل المنتجات بأسعار لا تقاوم
+          </p>
+          <a href="{{ store.url }}/products?sale=true" class="md-btn md-btn--filled md-btn--lg">
+            <span class="material-symbols-rounded" aria-hidden="true">local_offer</span>
+            تسوق العروض
+          </a>
+        </div>
+        <div style="font-size:6rem;opacity:0.6;" aria-hidden="true">🎁</div>
+      </div>
+    </div>
+  </section>
+
+  {# =============================================
+     NEW ARRIVALS
+     ============================================= #}
+  {% if settings.show_new_arrivals and new_products %}
+    <section class="section" aria-labelledby="new-arrivals-title">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2 id="new-arrivals-title" class="section-header__title">الوافدون الجدد</h2>
+            <p class="section-header__subtitle">أحدث ما وصل إلى متجرنا</p>
+          </div>
+          <a href="{{ store.url }}/products?sort=newest" class="md-btn md-btn--text">
+            عرض الكل
+            <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+          </a>
+        </div>
+
+        <div class="products-grid">
+          {% for product in new_products | slice(0, 4) %}
+            {% include 'views/components/product-card.twig' with { product: product, is_new: true, animate: true, index: loop.index } %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# =============================================
+     FEATURES SECTION
+     ============================================= #}
+  {% if settings.show_features_section %}
+    <section class="section" style="background-color:var(--md-sys-color-surface-container-lowest);">
+      <div class="container">
+        <div class="features-grid">
+
+          <div class="feature-item" data-animate data-delay="0">
+            <div class="feature-item__icon">
+              <span class="material-symbols-rounded" aria-hidden="true">local_shipping</span>
+            </div>
+            <h3 class="feature-item__title">شحن مجاني</h3>
+            <p class="feature-item__desc">شحن مجاني لجميع الطلبات التي تزيد عن 200 ريال داخل المملكة</p>
+          </div>
+
+          <div class="feature-item" data-animate data-delay="100">
+            <div class="feature-item__icon">
+              <span class="material-symbols-rounded" aria-hidden="true">verified_user</span>
+            </div>
+            <h3 class="feature-item__title">دفع آمن 100%</h3>
+            <p class="feature-item__desc">جميع معاملاتك محمية بأحدث تقنيات التشفير والأمان</p>
+          </div>
+
+          <div class="feature-item" data-animate data-delay="200">
+            <div class="feature-item__icon">
+              <span class="material-symbols-rounded" aria-hidden="true">replay</span>
+            </div>
+            <h3 class="feature-item__title">إرجاع مجاني</h3>
+            <p class="feature-item__desc">سياسة إرجاع مرنة خلال 14 يوم بدون أي تعقيدات</p>
+          </div>
+
+          <div class="feature-item" data-animate data-delay="300">
+            <div class="feature-item__icon">
+              <span class="material-symbols-rounded" aria-hidden="true">support_agent</span>
+            </div>
+            <h3 class="feature-item__title">دعم 24/7</h3>
+            <p class="feature-item__desc">فريق خدمة عملاء متوفر على مدار الساعة لمساعدتك</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+{% endblock %}

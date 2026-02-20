@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"
+  data-theme="{{ settings.dark_mode_default ?? 'system' }}"
+  data-theme-default="{{ settings.dark_mode_default ?? 'system' }}"
+  data-color-scheme="{{ settings.color_scheme ?? 'blue' }}"
+  data-font="{{ settings.arabic_font ?? 'noto-kufi' }}"
+  {% if settings.color_scheme == 'custom' and settings.primary_color %}
+  data-primary-color="{{ settings.primary_color }}"
+  {% endif %}
+>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  {# SEO #}
+  <title>{% block title %}{{ store.name }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ store.description }}{% endblock %}">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="{{ request.url }}">
+
+  {# Open Graph #}
+  <meta property="og:type"        content="{% block og_type %}website{% endblock %}">
+  <meta property="og:title"       content="{% block og_title %}{{ store.name }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ store.description }}{% endblock %}">
+  <meta property="og:image"       content="{% block og_image %}{{ store.logo }}{% endblock %}">
+  <meta property="og:url"         content="{{ request.url }}">
+  <meta property="og:locale"      content="ar_SA">
+
+  {# Favicon #}
+  <link rel="icon" type="image/x-icon" href="{{ settings.favicon ?? store.favicon ?? '/assets/images/favicon.ico' }}">
+  <link rel="apple-touch-icon"    href="{{ settings.favicon ?? store.favicon ?? '/assets/images/favicon.ico' }}">
+
+  {# Google Fonts - Arabic #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700&family=Almarai:wght@300;400;700;800&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700&family=Almarai:wght@300;400;700;800&display=swap">
+  </noscript>
+
+  {# Material Symbols (Icons) #}
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+    onload="this.onload=null;this.rel='stylesheet'">
+
+  {# Theme Stylesheets #}
+  <link rel="stylesheet" href="{{ 'assets/css/tokens.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'assets/css/base.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'assets/css/components.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'assets/css/layout.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'assets/css/pages.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'assets/css/animations.css' | asset_url }}">
+
+  {# Preload critical JS #}
+  <link rel="modulepreload" href="{{ 'assets/js/material-color-utils.js' | asset_url }}">
+
+  {# Inline critical styles for initial render #}
+  <style>
+    /* Critical CSS - prevent flash of unstyled content */
+    html { background-color: #fafcfe; color: #191c1f; }
+    [data-theme="dark"] { background-color: #0f1316; color: #e0e3e5; }
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) { background-color: #0f1316; color: #e0e3e5; }
+    }
+    .site-header { position: sticky; top: 0; z-index: 150; }
+    body { opacity: 0; transition: opacity 0.2s; }
+    body.loaded { opacity: 1; }
+  </style>
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+  {# Skip to content (accessibility) #}
+  <a href="#main-content" class="sr-only" style="position:fixed;top:8px;right:8px;z-index:9999;padding:12px 20px;background:var(--md-sys-color-primary);color:var(--md-sys-color-on-primary);border-radius:8px;font-weight:600;transition:none">
+    تخطى إلى المحتوى
+  </a>
+
+  {# Announcement Bar #}
+  {% if settings.announcement_bar %}
+    <div class="announcement-bar" role="banner">
+      <div class="container">
+        {{ settings.announcement_text | default('شحن مجاني لجميع الطلبات') }}
+      </div>
+    </div>
+  {% endif %}
+
+  {# Site Header #}
+  {% include 'layout/header.twig' %}
+
+  {# Mobile Drawer #}
+  {% include 'layout/drawer.twig' %}
+
+  {# Main Content #}
+  <main id="main-content" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  {# Site Footer #}
+  {% include 'layout/footer.twig' %}
+
+  {# Snackbar container #}
+  <div id="snackbar-container" aria-live="polite" aria-atomic="true"></div>
+
+  {# Overlay for mini-cart, etc. #}
+  <div class="mini-cart-overlay" aria-hidden="true"></div>
+
+  {# Drawer Overlay #}
+  <div class="site-drawer__overlay" aria-hidden="true"></div>
+
+  {# Scripts #}
+  <script src="{{ 'assets/js/material-color-utils.js' | asset_url }}" defer></script>
+  <script src="{{ 'assets/js/theme.js' | asset_url }}" defer></script>
+  <script src="{{ 'assets/js/cart.js' | asset_url }}" defer></script>
+
+  {% block scripts_extra %}{% endblock %}
+
+  {# Mark body as loaded for fade-in #}
+  <script>
+    (function() {
+      // Prevent FOUC for dark mode
+      var theme = localStorage.getItem('salla-md-theme') ||
+                  document.documentElement.dataset.themeDefault ||
+                  'system';
+      if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.dataset.theme = 'dark';
+      } else {
+        document.documentElement.dataset.theme = 'light';
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        document.body.classList.add('loaded');
+      });
+    })();
+  </script>
+
+</body>
+</html>
