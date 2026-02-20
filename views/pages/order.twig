@@ -1,0 +1,218 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}تفاصيل الطلب #{{ order.reference_id }} - {{ store.name }}{% endblock %}
+{% block body_class %}page-order{% endblock %}
+
+{% block content %}
+  <div class="container" style="padding-top:var(--md-sys-spacing-lg);">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}/profile" class="md-breadcrumb__link">حسابي</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">طلب #{{ order.reference_id }}</span>
+      </div>
+    </nav>
+
+    {# Success Message (for just-placed orders) #}
+    {% if order.is_new or success %}
+      <div style="background:var(--md-sys-color-tertiary-container);color:var(--md-sys-color-on-tertiary-container);padding:var(--md-sys-spacing-xl);border-radius:var(--md-sys-shape-corner-extra-large);margin-bottom:var(--md-sys-spacing-xl);text-align:center;">
+        <span class="material-symbols-rounded" style="font-size:56px;margin-bottom:8px;display:block;" aria-hidden="true">check_circle</span>
+        <h2 style="font-size:var(--md-sys-typescale-headline-small-size);font-weight:700;margin-bottom:8px;">تم استلام طلبك بنجاح!</h2>
+        <p style="font-size:var(--md-sys-typescale-body-medium-size);opacity:0.85;">
+          شكراً لك! رقم طلبك هو <strong>#{{ order.reference_id }}</strong>. ستصلك رسالة تأكيد على بريدك الإلكتروني.
+        </p>
+      </div>
+    {% endif %}
+
+    {# Order Header #}
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--md-sys-spacing-md);margin-bottom:var(--md-sys-spacing-xl);">
+      <div>
+        <h1 class="md-headline-large" style="color:var(--md-sys-color-on-surface);">
+          طلب #{{ order.reference_id }}
+        </h1>
+        <p style="color:var(--md-sys-color-on-surface-variant);font-size:var(--md-sys-typescale-body-medium-size);margin-top:4px;">
+          تاريخ الطلب: {{ order.created_at | date('d/m/Y - h:i A') }}
+        </p>
+      </div>
+      <div>
+        {% set status_colors = {
+          'pending': 'var(--md-sys-color-tertiary-container)',
+          'processing': 'var(--md-sys-color-primary-container)',
+          'shipped': 'var(--md-sys-color-secondary-container)',
+          'delivered': 'var(--md-sys-color-tertiary-container)',
+          'cancelled': 'var(--md-sys-color-error-container)'
+        } %}
+        {% set status_text_colors = {
+          'pending': 'var(--md-sys-color-on-tertiary-container)',
+          'processing': 'var(--md-sys-color-on-primary-container)',
+          'shipped': 'var(--md-sys-color-on-secondary-container)',
+          'delivered': 'var(--md-sys-color-on-tertiary-container)',
+          'cancelled': 'var(--md-sys-color-on-error-container)'
+        } %}
+        {% set status_labels = {
+          'pending': 'قيد الانتظار',
+          'processing': 'قيد التجهيز',
+          'shipped': 'تم الشحن',
+          'delivered': 'تم التوصيل',
+          'cancelled': 'ملغي'
+        } %}
+        <span style="padding:8px 20px;border-radius:var(--md-sys-shape-corner-full);font-weight:600;font-size:var(--md-sys-typescale-label-large-size);background:{{ status_colors[order.status] ?? 'var(--md-sys-color-surface-container)' }};color:{{ status_text_colors[order.status] ?? 'var(--md-sys-color-on-surface)' }};">
+          {{ status_labels[order.status] ?? order.status_name ?? order.status }}
+        </span>
+      </div>
+    </div>
+
+    {# Order Progress #}
+    {% if order.status != 'cancelled' %}
+      <div style="background:var(--md-sys-color-surface-container-lowest);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-xl);border:1px solid var(--md-sys-color-outline-variant);margin-bottom:var(--md-sys-spacing-xl);">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          {% set steps = ['pending', 'processing', 'shipped', 'delivered'] %}
+          {% set step_labels = ['تأكيد الطلب', 'قيد التجهيز', 'تم الشحن', 'تم التوصيل'] %}
+          {% set step_icons = ['receipt_long', 'inventory_2', 'local_shipping', 'done_all'] %}
+          {% set current_idx = steps | index_of(order.status) ?? 0 %}
+          {% for step in steps %}
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;text-align:center;">
+              <span class="material-symbols-rounded" style="font-size:28px;color:{% if loop.index0 <= current_idx %}var(--md-sys-color-primary){% else %}var(--md-sys-color-outline){% endif %};" aria-hidden="true">{{ step_icons[loop.index0] }}</span>
+              <span style="font-size:var(--md-sys-typescale-label-small-size);font-weight:{% if loop.index0 <= current_idx %}600{% else %}400{% endif %};color:{% if loop.index0 <= current_idx %}var(--md-sys-color-primary){% else %}var(--md-sys-color-on-surface-variant){% endif %};">
+                {{ step_labels[loop.index0] }}
+              </span>
+            </div>
+            {% if not loop.last %}
+              <div style="flex:1;height:3px;background:{% if loop.index0 < current_idx %}var(--md-sys-color-primary){% else %}var(--md-sys-color-outline-variant){% endif %};border-radius:2px;margin-bottom:24px;"></div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="order-layout" style="display:grid;grid-template-columns:1fr 380px;gap:var(--md-sys-spacing-xl);align-items:start;">
+
+      {# Order Items #}
+      <div>
+        <div style="background:var(--md-sys-color-surface-container-lowest);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-xl);border:1px solid var(--md-sys-color-outline-variant);">
+          <h2 style="font-size:var(--md-sys-typescale-title-large-size);font-weight:700;color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-lg);display:flex;align-items:center;gap:8px;">
+            <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary)" aria-hidden="true">shopping_bag</span>
+            المنتجات ({{ order.items | length }})
+          </h2>
+
+          {% for item in order.items %}
+            <div style="display:flex;align-items:center;gap:var(--md-sys-spacing-md);padding:var(--md-sys-spacing-md) 0;{% if not loop.last %}border-bottom:1px solid var(--md-sys-color-outline-variant);{% endif %}">
+              <img src="{{ item.product.images[0].url ?? '/assets/images/placeholder.png' }}" alt="{{ item.product.name }}" style="width:72px;height:72px;border-radius:var(--md-sys-shape-corner-medium);object-fit:cover;" loading="lazy">
+              <div style="flex:1;">
+                <a href="{{ item.product.url }}" style="text-decoration:none;">
+                  <div style="font-weight:600;font-size:var(--md-sys-typescale-title-small-size);color:var(--md-sys-color-on-surface);">{{ item.product.name }}</div>
+                </a>
+                {% if item.options %}
+                  <div style="font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-on-surface-variant);margin-top:4px;">
+                    {% for option in item.options %}
+                      {{ option.name }}: <strong>{{ option.value }}</strong>{% if not loop.last %} · {% endif %}
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                <div style="font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-on-surface-variant);margin-top:4px;">
+                  الكمية: {{ item.quantity }}
+                </div>
+              </div>
+              <div style="font-weight:700;color:var(--md-sys-color-primary);font-size:var(--md-sys-typescale-title-small-size);flex-shrink:0;">
+                {{ item.total.formatted ?? ((item.price.amount * item.quantity) | number_format(2) ~ ' ر.س') }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {# Shipping Info #}
+        {% if order.shipping_address %}
+          <div style="background:var(--md-sys-color-surface-container-lowest);border-radius:var(--md-sys-shape-corner-extra-large);padding:var(--md-sys-spacing-xl);border:1px solid var(--md-sys-color-outline-variant);margin-top:var(--md-sys-spacing-lg);">
+            <h2 style="font-size:var(--md-sys-typescale-title-large-size);font-weight:700;color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-md);display:flex;align-items:center;gap:8px;">
+              <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary)" aria-hidden="true">location_on</span>
+              عنوان الشحن
+            </h2>
+            <div style="color:var(--md-sys-color-on-surface-variant);line-height:1.8;font-size:var(--md-sys-typescale-body-medium-size);">
+              <div style="font-weight:600;color:var(--md-sys-color-on-surface);">{{ order.shipping_address.name }}</div>
+              {{ order.shipping_address.address }}<br>
+              {{ order.shipping_address.city }}{% if order.shipping_address.postal_code %} - {{ order.shipping_address.postal_code }}{% endif %}<br>
+              {{ order.shipping_address.phone }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Order Summary #}
+      <div class="cart-summary">
+        <h2 class="cart-summary__title">ملخص الطلب</h2>
+
+        <div class="cart-summary__row">
+          <span class="cart-summary__label">المجموع الفرعي</span>
+          <span class="cart-summary__value">{{ order.subtotal.formatted }}</span>
+        </div>
+
+        {% if order.discount %}
+          <div class="cart-summary__row">
+            <span class="cart-summary__label" style="color:var(--md-sys-color-error);">الخصم</span>
+            <span class="cart-summary__value" style="color:var(--md-sys-color-error);">- {{ order.discount.formatted }}</span>
+          </div>
+        {% endif %}
+
+        <div class="cart-summary__row">
+          <span class="cart-summary__label">الشحن</span>
+          <span class="cart-summary__value">
+            {% if order.shipping.amount %}
+              {{ order.shipping.formatted }}
+            {% else %}
+              <span style="color:var(--md-sys-color-tertiary);font-weight:600;">مجاني</span>
+            {% endif %}
+          </span>
+        </div>
+
+        {% if order.tax %}
+          <div class="cart-summary__row">
+            <span class="cart-summary__label">ضريبة القيمة المضافة</span>
+            <span class="cart-summary__value">{{ order.tax.formatted }}</span>
+          </div>
+        {% endif %}
+
+        <div class="cart-summary__total">
+          <span class="cart-summary__total-label">الإجمالي</span>
+          <span class="cart-summary__total-value">{{ order.total.formatted }}</span>
+        </div>
+
+        <div style="margin-top:var(--md-sys-spacing-lg);padding-top:var(--md-sys-spacing-md);border-top:1px solid var(--md-sys-color-outline-variant);">
+          <div style="display:flex;align-items:center;gap:8px;font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-on-surface-variant);margin-bottom:8px;">
+            <span class="material-symbols-rounded" style="font-size:18px" aria-hidden="true">credit_card</span>
+            طريقة الدفع: <strong style="color:var(--md-sys-color-on-surface);">{{ order.payment_method.name ?? 'بطاقة ائتمان' }}</strong>
+          </div>
+          {% if order.payment_status %}
+            <div style="display:flex;align-items:center;gap:8px;font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-tertiary);">
+              <span class="material-symbols-rounded" style="font-size:18px" aria-hidden="true">check_circle</span>
+              {{ order.payment_status_name ?? 'تم الدفع' }}
+            </div>
+          {% endif %}
+        </div>
+
+        {# Actions #}
+        <div style="display:flex;flex-direction:column;gap:var(--md-sys-spacing-sm);margin-top:var(--md-sys-spacing-lg);">
+          <a href="{{ store.url }}/products" class="md-btn md-btn--filled md-btn--full">
+            <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+            متابعة التسوق
+          </a>
+          {% if order.tracking_url %}
+            <a href="{{ order.tracking_url }}" target="_blank" rel="noopener" class="md-btn md-btn--outlined md-btn--full">
+              <span class="material-symbols-rounded" aria-hidden="true">local_shipping</span>
+              تتبع الشحنة
+            </a>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+{% endblock %}

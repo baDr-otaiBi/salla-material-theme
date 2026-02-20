@@ -1,0 +1,121 @@
+{% extends 'layout/base.twig' %}
+{% block title %}إنشاء حساب - {{ store.name }}{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-card__logo">
+      {% if settings.store_logo %}
+        <img src="{{ settings.store_logo }}" alt="{{ store.name }}" height="48" style="margin:0 auto;">
+      {% else %}
+        <span style="font-size:2rem;font-weight:800;color:var(--md-sys-color-primary);">{{ store.name }}</span>
+      {% endif %}
+    </div>
+
+    <h1 class="auth-card__title">إنشاء حساب جديد</h1>
+    <p class="auth-card__subtitle">أنشئ حسابك واستمتع بتجربة تسوق مميزة</p>
+
+    {% if error %}
+      <div style="background:var(--md-sys-color-error-container);color:var(--md-sys-color-on-error-container);padding:12px 16px;border-radius:var(--md-sys-shape-corner-medium);margin-bottom:16px;font-size:var(--md-sys-typescale-body-medium-size);">
+        <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-inline-end:6px" aria-hidden="true">error</span>
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form class="auth-form" method="POST" action="{{ store.url }}/register" novalidate>
+      {{ csrf_field() }}
+
+      <div class="md-field">
+        <label class="md-field__label" for="name">الاسم الكامل</label>
+        <input
+          class="md-field__input"
+          type="text"
+          id="name"
+          name="name"
+          placeholder="محمد أحمد"
+          required
+          autocomplete="name"
+          value="{{ old.name }}"
+        >
+      </div>
+
+      <div class="md-field">
+        <label class="md-field__label" for="email">البريد الإلكتروني</label>
+        <input
+          class="md-field__input"
+          type="email"
+          id="email"
+          name="email"
+          placeholder="your@email.com"
+          required
+          autocomplete="email"
+          value="{{ old.email }}"
+        >
+      </div>
+
+      <div class="md-field">
+        <label class="md-field__label" for="phone">رقم الجوال</label>
+        <input
+          class="md-field__input"
+          type="tel"
+          id="phone"
+          name="phone"
+          placeholder="05xxxxxxxx"
+          autocomplete="tel"
+          value="{{ old.phone }}"
+        >
+      </div>
+
+      <div class="md-field">
+        <label class="md-field__label" for="password">كلمة المرور</label>
+        <input
+          class="md-field__input"
+          type="password"
+          id="password"
+          name="password"
+          placeholder="••••••••"
+          required
+          autocomplete="new-password"
+          minlength="8"
+        >
+      </div>
+
+      <div class="md-field">
+        <label class="md-field__label" for="password_confirmation">تأكيد كلمة المرور</label>
+        <input
+          class="md-field__input"
+          type="password"
+          id="password_confirmation"
+          name="password_confirmation"
+          placeholder="••••••••"
+          required
+          autocomplete="new-password"
+        >
+      </div>
+
+      <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:var(--md-sys-typescale-body-small-size);color:var(--md-sys-color-on-surface-variant);">
+        <input type="checkbox" name="agree_terms" required style="accent-color:var(--md-sys-color-primary);width:18px;height:18px;margin-top:2px;flex-shrink:0;">
+        بالتسجيل، أوافق على
+        <a href="{{ store.url }}/terms" style="color:var(--md-sys-color-primary);font-weight:600;">الشروط والأحكام</a>
+        و<a href="{{ store.url }}/privacy" style="color:var(--md-sys-color-primary);font-weight:600;">سياسة الخصوصية</a>
+      </label>
+
+      <button type="submit" class="md-btn md-btn--filled md-btn--full md-btn--lg">
+        <span class="material-symbols-rounded" aria-hidden="true">person_add</span>
+        إنشاء الحساب
+      </button>
+
+    </form>
+
+    <div class="auth-divider">أو</div>
+
+    <p style="text-align:center;font-size:var(--md-sys-typescale-body-medium-size);color:var(--md-sys-color-on-surface-variant);">
+      لديك حساب بالفعل؟
+      <a href="{{ store.url }}/login" style="font-weight:700;color:var(--md-sys-color-primary);">تسجيل الدخول</a>
+    </p>
+
+  </div>
+</div>
+{% endblock %}

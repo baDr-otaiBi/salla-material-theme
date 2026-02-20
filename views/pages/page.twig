@@ -1,0 +1,39 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ page.title }} - {{ store.name }}{% endblock %}
+{% block description %}{{ page.content | striptags | truncate(160) }}{% endblock %}
+{% block body_class %}page-static{% endblock %}
+
+{% block content %}
+  <div class="container" style="padding-top:var(--md-sys-spacing-lg);">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">{{ page.title }}</span>
+      </div>
+    </nav>
+
+    <article class="static-page" style="max-width:800px;margin:0 auto;padding:var(--md-sys-spacing-xl) 0 var(--md-sys-spacing-3xl);">
+
+      <h1 style="font-size:clamp(1.75rem,4vw,2.5rem);font-weight:700;color:var(--md-sys-color-on-surface);line-height:1.3;margin-bottom:var(--md-sys-spacing-xl);">
+        {{ page.title }}
+      </h1>
+
+      {% if page.image %}
+        <div style="border-radius:var(--md-sys-shape-corner-extra-large);overflow:hidden;margin-bottom:var(--md-sys-spacing-2xl);">
+          <img src="{{ page.image }}" alt="{{ page.title }}" style="width:100%;height:auto;display:block;" loading="eager">
+        </div>
+      {% endif %}
+
+      <div class="article-body" style="font-size:var(--md-sys-typescale-body-large-size);line-height:1.9;color:var(--md-sys-color-on-surface);">
+        {{ page.content | raw }}
+      </div>
+
+    </article>
+  </div>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}نتائج البحث: {{ query }} - {{ store.name }}{% endblock %}
+{% block body_class %}page-search{% endblock %}
+
+{% block content %}
+  <div class="container" style="padding-top:var(--md-sys-spacing-lg);">
+
+    {# Breadcrumb #}
+    <nav class="md-breadcrumb" aria-label="مسار التنقل">
+      <div class="md-breadcrumb__item">
+        <a href="{{ store.url }}" class="md-breadcrumb__link">الرئيسية</a>
+        <span class="md-breadcrumb__separator" aria-hidden="true">‹</span>
+      </div>
+      <div class="md-breadcrumb__item">
+        <span class="md-breadcrumb__current" aria-current="page">نتائج البحث</span>
+      </div>
+    </nav>
+
+    {# Search Form #}
+    <div class="search-hero" style="text-align:center;padding:var(--md-sys-spacing-2xl) 0 var(--md-sys-spacing-xl);">
+      <h1 class="md-headline-large" style="color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-lg);">
+        {% if query %}
+          نتائج البحث عن: <span style="color:var(--md-sys-color-primary);">"{{ query }}"</span>
+        {% else %}
+          البحث في المتجر
+        {% endif %}
+      </h1>
+
+      <form action="{{ store.url }}/search" method="GET" style="max-width:600px;margin:0 auto;">
+        <div class="md-search" style="display:flex;align-items:center;gap:8px;background:var(--md-sys-color-surface-container);border-radius:var(--md-sys-shape-corner-full);padding:4px 4px 4px 20px;">
+          <span class="material-symbols-rounded" style="color:var(--md-sys-color-on-surface-variant);font-size:22px;" aria-hidden="true">search</span>
+          <input
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="ابحث عن منتجات..."
+            aria-label="البحث في المتجر"
+            style="flex:1;border:none;background:transparent;font-size:var(--md-sys-typescale-body-large-size);color:var(--md-sys-color-on-surface);outline:none;padding:12px 0;"
+            autofocus
+          >
+          <button type="submit" class="md-btn md-btn--filled" style="border-radius:var(--md-sys-shape-corner-full);flex-shrink:0;">
+            بحث
+          </button>
+        </div>
+      </form>
+    </div>
+
+    {% if query %}
+      {# Results Count #}
+      {% if products.total %}
+        <div class="products-toolbar">
+          <span class="products-toolbar__count" aria-live="polite">
+            {{ products.total }} نتيجة
+          </span>
+          <div class="products-toolbar__actions">
+            <div class="view-toggle" role="group" aria-label="طريقة العرض">
+              <button class="view-toggle__btn active" data-view="grid" aria-label="عرض شبكي" aria-pressed="true">
+                <span class="material-symbols-rounded" aria-hidden="true">grid_view</span>
+              </button>
+              <button class="view-toggle__btn" data-view="list" aria-label="عرض قائمة" aria-pressed="false">
+                <span class="material-symbols-rounded" aria-hidden="true">view_list</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {# Products Grid #}
+      {% if products.data %}
+        <div class="products-grid" id="products-grid" role="list">
+          {% for product in products.data %}
+            {% include 'views/components/product-card.twig' with {
+              product: product,
+              animate: true,
+              index: loop.index
+            } %}
+          {% endfor %}
+        </div>
+
+        {# Pagination #}
+        {% if products.last_page > 1 %}
+          <nav class="md-pagination" aria-label="التصفح بين الصفحات" style="display:flex;justify-content:center;gap:8px;margin-top:var(--md-sys-spacing-2xl);flex-wrap:wrap;">
+            {% if products.current_page > 1 %}
+              <a href="{{ store.url }}/search?q={{ query }}&page={{ products.current_page - 1 }}" class="md-btn md-btn--outlined" aria-label="الصفحة السابقة">
+                <span class="material-symbols-rounded" aria-hidden="true">chevron_right</span>
+                السابق
+              </a>
+            {% endif %}
+            {% for page in 1..products.last_page %}
+              {% if page == products.current_page %}
+                <span class="md-btn md-btn--filled" aria-current="page" style="min-width:40px;">{{ page }}</span>
+              {% elseif page == 1 or page == products.last_page or (page >= products.current_page - 2 and page <= products.current_page + 2) %}
+                <a href="{{ store.url }}/search?q={{ query }}&page={{ page }}" class="md-btn md-btn--outlined" style="min-width:40px;" aria-label="الصفحة {{ page }}">{{ page }}</a>
+              {% elseif page == products.current_page - 3 or page == products.current_page + 3 %}
+                <span style="align-self:center;color:var(--md-sys-color-on-surface-variant);">...</span>
+              {% endif %}
+            {% endfor %}
+            {% if products.current_page < products.last_page %}
+              <a href="{{ store.url }}/search?q={{ query }}&page={{ products.current_page + 1 }}" class="md-btn md-btn--outlined" aria-label="الصفحة التالية">
+                التالي
+                <span class="material-symbols-rounded" aria-hidden="true">chevron_left</span>
+              </a>
+            {% endif %}
+          </nav>
+        {% endif %}
+
+      {% else %}
+        {# No Results #}
+        <div class="empty-state" style="padding:var(--md-sys-spacing-3xl) 0;">
+          <div class="empty-state__icon">
+            <span class="material-symbols-rounded" style="font-size:80px;color:var(--md-sys-color-primary);opacity:0.5;" aria-hidden="true">search_off</span>
+          </div>
+          <h2 class="empty-state__title">لا توجد نتائج</h2>
+          <p class="empty-state__desc">لم نتمكن من إيجاد منتجات تطابق "{{ query }}". حاول استخدام كلمات مختلفة.</p>
+          <a href="{{ store.url }}/products" class="md-btn md-btn--filled md-btn--lg">
+            <span class="material-symbols-rounded" aria-hidden="true">shopping_bag</span>
+            تصفح المنتجات
+          </a>
+        </div>
+      {% endif %}
+
+    {% else %}
+      {# No Query - Show suggestions #}
+      <div class="empty-state" style="padding:var(--md-sys-spacing-2xl) 0;">
+        <div class="empty-state__icon">
+          <span class="material-symbols-rounded" style="font-size:80px;color:var(--md-sys-color-primary);opacity:0.5;" aria-hidden="true">search</span>
+        </div>
+        <h2 class="empty-state__title">ابحث عن ما تريد</h2>
+        <p class="empty-state__desc">اكتب كلمة البحث في الحقل أعلاه للعثور على المنتجات التي تبحث عنها</p>
+      </div>
+
+      {# Popular Categories #}
+      {% if store.categories %}
+        <div style="max-width:600px;margin:0 auto var(--md-sys-spacing-2xl);">
+          <h3 style="font-size:var(--md-sys-typescale-title-medium-size);font-weight:600;color:var(--md-sys-color-on-surface);margin-bottom:var(--md-sys-spacing-md);text-align:center;">
+            تصفح حسب الفئات
+          </h3>
+          <div class="md-chips" style="justify-content:center;" role="list">
+            {% for category in store.categories | slice(0, 8) %}
+              <a href="{{ category.url }}" class="md-chip md-chip--suggestion" role="listitem">
+                {{ category.name }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+
+  </div>
+{% endblock %}
